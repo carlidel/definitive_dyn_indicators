@@ -2,6 +2,8 @@
 from henon_map_cpp.dynamic_indicators import abstract_engine
 import numpy as np
 import matplotlib.pyplot as plt
+import os
+import pathlib
 
 import xobjects as xo
 import xline as xl
@@ -9,6 +11,27 @@ import xtrack as xt
 
 from cpymad.madx import Madx
 import sixtracktools as st
+
+def get_lhc_mask(beam_type=1, seed=1):
+    if beam_type == 1:
+        beam_type = "b1_without_bb"
+    elif beam_type in (2, 4):
+        beam_type = "b4_without_bb"
+    else:
+        raise ValueError("beam_type must be 1, 2 or 4")
+    position_of_this_file = pathlib.Path(__file__).parent.absolute()
+    # go up one level
+    path = position_of_this_file.parent
+    # go to the masks folder
+    path = path.joinpath('masks')
+    # list files in the path
+    files = os.listdir(path)
+    filename = "lhc_mask_" + beam_type + "_" + str(seed) + ".json"
+    if filename in files:
+        # return complete path of the file
+        return path.joinpath(filename)
+    else:
+        raise Exception("Mask not found!")
 
 class xtrack_engine(abstract_engine):
     def __init__(self, line_path="masks/line_bb_for_tracking.json", xy_wall=1-0, context="CPU", device_id="1.0"):
