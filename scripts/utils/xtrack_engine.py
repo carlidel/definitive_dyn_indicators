@@ -53,7 +53,9 @@ class xtrack_engine(abstract_engine):
 
     def track(self, x, px, y, py, t, p0c=6500e9):
         self.n_turns = 0
-        self.particles = xt.Particles(p0c=p0c, x=x, px=px, y=y, py=py, zeta=np.zeros_like(x), delta=np.zeros_like(x))
+        self.particles = xt.Particles(
+            _context=self.context, p0c=p0c, x=x, px=px, y=y, py=py,
+            zeta=np.zeros_like(x), delta=np.zeros_like(x))
         self.tracker.track(self.particles, num_turns=t, turn_by_turn_monitor=False)
         
         data = sorted(zip(
