@@ -10,7 +10,6 @@ import xline as xl
 import xtrack as xt
 
 from cpymad.madx import Madx
-import sixtracktools as st
 
 def get_lhc_mask(beam_type=1, seed=1):
     if beam_type == 1:
