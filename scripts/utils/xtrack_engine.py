@@ -36,10 +36,13 @@ class xtrack_engine(abstract_engine):
     def __init__(self, line_path="masks/line_bb_for_tracking.json", xy_wall=1.0, context="CPU", device_id="1.0"):
         # select context
         if context == "CPU":
+            self.context_string = "CPU"
             self.context = xo.ContextCpu()
         elif context == "CUDA":
+            self.context_string = "CUDA"
             self.context = xo.ContextCupy()
         elif context == "OPENCL":
+            self.context_string = "OPENCL"
             self.context = xo.ContextPyopencl(device=device_id)
         else:
             raise ValueError("context not valid")
@@ -53,18 +56,26 @@ class xtrack_engine(abstract_engine):
 
     def track(self, x, px, y, py, t, p0c=6500e9):
         self.n_turns = 0
-        self.particles = xt.Particles(
-            _context=self.context, p0c=p0c, x=x, px=px, y=y, py=py,
-            zeta=np.zeros_like(x), delta=np.zeros_like(x))
+        self.particles = xt.Particles(_context=self.context,p0c=p0c, x=x, px=px, y=y, py=py, zeta=np.zeros_like(x), delta=np.zeros_like(x))
         self.tracker.track(self.particles, num_turns=t, turn_by_turn_monitor=False)
         
-        data = sorted(zip(
-            self.particles.x, self.particles.px,
-            self.particles.y, self.particles.py,
-            self.particles.at_turn, self.particles.particle_id),
-            key=lambda x: x[5]
-        )
+        if self.context_string == "CUDA":
+            x = self.particles.x.get()
+            px = self.particles.px.get()
+            y = self.particles.y.get()
+            py = self.particles.py.get()
+            at_turn = self.particles.at_turn.get()
+            particle_id = self.particles.particle_id.get()
+        else:
+            x = self.particles.x
+            px = self.particles.px
+            y = self.particles.y
+            py = self.particles.py
+            at_turn = self.particles.at_turn
+            particle_id = self.particles.particle_id
 
+        data = sorted(zip(x, px, y, py, at_turn, particle_id),
+                      key=lambda x: x[5])
         self.n_turns += t
 
         at_turn_data = np.array([x[4] for x in data])
@@ -83,13 +94,23 @@ class xtrack_engine(abstract_engine):
         self.tracker.track(self.particles, num_turns=t,
                            turn_by_turn_monitor=False)
 
-        data = sorted(zip(
-            self.particles.x, self.particles.px,
-            self.particles.y, self.particles.py,
-            self.particles.at_turn, self.particles.particle_id),
-            key=lambda x: x[5]
-        )
+        if self.context_string == "CUDA":
+            x = self.particles.x.get()
+            px = self.particles.px.get()
+            y = self.particles.y.get()
+            py = self.particles.py.get()
+            at_turn = self.particles.at_turn.get()
+            particle_id = self.particles.particle_id.get()
+        else:
+            x = self.particles.x
+            px = self.particles.px
+            y = self.particles.y
+            py = self.particles.py
+            at_turn = self.particles.at_turn
+            particle_id = self.particles.particle_id
 
+        data = sorted(zip(x, px, y, py, at_turn, particle_id),
+                      key=lambda x: x[5])
         self.n_turns += t
 
         at_turn_data = np.array([x[4] for x in data])
