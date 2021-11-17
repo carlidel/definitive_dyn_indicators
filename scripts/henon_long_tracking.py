@@ -5,7 +5,7 @@ from tqdm.auto import tqdm
 import pickle
 
 import henon_map_cpp as hm
-from .config import henon_square_configuration as cfg
+from config import henon_square_configuration as cfg
 
 
 # get path of this script with pathlib
@@ -44,7 +44,7 @@ for epsilon in tqdm(epsilon_list):
 
     steps = engine.get_steps()
 
-    with open(DATA_PATH.joinpath(f"henon_long_tracking_{epsilon:.2f}.npy"), 'wb') as f:
+    with open(DATA_PATH.joinpath(f"henon_long_tracking_{epsilon:.1f}.pkl"), 'wb') as f:
         pickle.dump(
             {
                 "config": cfg,
