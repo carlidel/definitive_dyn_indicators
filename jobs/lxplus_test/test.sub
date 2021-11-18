@@ -1,8 +1,8 @@
 executable              = test.sh
 
-output = out.txt
-error = err.txt
-log = log.txt
+output                  = ./$(ClusterId)_$(ProcId)out.txt
+error = ./$(ClusterId)_$(ProcId)err.txt
+log = ./$(ClusterId)_$(ProcId)log.txt
 
 should_transfer_files   = YES
 
