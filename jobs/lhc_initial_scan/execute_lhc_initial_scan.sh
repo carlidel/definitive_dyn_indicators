@@ -8,7 +8,7 @@ unset PYTHONPATH
 source $MYPYTHON/bin/activate
 export PATH=$MYPYTHON/bin:$PATH
 
-source /afs/cern.ch/work/c/camontan/public/definitive_dynamic_indicators/venv/bin/activate
+source /afs/cern.ch/work/c/camontan/public/definitive_dyn_indicators/venv/bin/activate
 
 which python
 
