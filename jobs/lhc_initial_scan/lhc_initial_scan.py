@@ -8,7 +8,7 @@ import time
 import pickle
 
 
-from definitive_dyn_indicators.utils import xtrack_engine, get_lhc_mask
+from definitive_dyn_indicators.utils.xtrack_engine import xtrack_engine
 from definitive_dyn_indicators.scripts.config import lhc_square_test_configuration as lhc_config
 
 OUTDIR = "/afs/cern.ch/work/c/camontan/public/definitive_dyn_indicators/data/"
