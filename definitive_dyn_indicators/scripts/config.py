@@ -73,7 +73,7 @@ xx, yy = np.meshgrid(
 
 lhc_square_test_configuration["x_flat"] = xx.flatten()
 lhc_square_test_configuration["y_flat"] = yy.flatten()
-lhc_square_test_configuration["px_flat"] = np.zeros_like(xx)
-lhc_square_test_configuration["py_flat"] = np.zeros_like(xx)
+lhc_square_test_configuration["px_flat"] = np.zeros_like(xx.flatten())
+lhc_square_test_configuration["py_flat"] = np.zeros_like(xx.flatten())
 
 lhc_square_test_configuration["total_samples"] = lhc_square_test_configuration["x_flat"].size
