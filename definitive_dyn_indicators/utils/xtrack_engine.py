@@ -18,9 +18,9 @@ def get_lhc_mask(beam_type=1, seed=1):
         beam_type = "b4_without_bb"
     else:
         raise ValueError("beam_type must be 1, 2 or 4")
-    position_of_this_file = pathlib.Path(__file__).parent.parent.absolute()
-    # go up one level
-    path = position_of_this_file.parent
+    position_of_this_file = pathlib.Path(__file__).parent.absolute()
+    # go up two levels
+    path = position_of_this_file.parent.parent
     # go to the masks folder
     path = path.joinpath('masks')
     # list files in the path
@@ -33,7 +33,7 @@ def get_lhc_mask(beam_type=1, seed=1):
         raise Exception("Mask not found!")
 
 class xtrack_engine(abstract_engine):
-    def __init__(self, line_path="masks/line_bb_for_tracking.json", xy_wall=1.0, context="CPU", device_id="1.0"):
+    def __init__(self, line_path=get_lhc_mask(), xy_wall=1.0, context="CPU", device_id="1.0"):
         # select context
         if context == "CPU":
             self.context_string = "CPU"
@@ -59,7 +59,7 @@ class xtrack_engine(abstract_engine):
         self.particles = xt.Particles(_context=self.context,p0c=p0c, x=x, px=px, y=y, py=py, zeta=np.zeros_like(x), delta=np.zeros_like(x))
         self.tracker.track(self.particles, num_turns=t, turn_by_turn_monitor=False)
         
-        if self.context_string == "CUDA":
+        if self.context_string == "CUDA" or self.context_string == "OPENCL":
             x = self.particles.x.get()
             px = self.particles.px.get()
             y = self.particles.y.get()
@@ -94,7 +94,7 @@ class xtrack_engine(abstract_engine):
         self.tracker.track(self.particles, num_turns=t,
                            turn_by_turn_monitor=False)
 
-        if self.context_string == "CUDA":
+        if self.context_string == "CUDA" or self.context_string == "OPENCL":
             x = self.particles.x.get()
             px = self.particles.px.get()
             y = self.particles.y.get()

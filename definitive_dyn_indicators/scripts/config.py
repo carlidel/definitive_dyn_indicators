@@ -42,3 +42,38 @@ henon_square_configuration["px_flat"] = np.zeros_like(xx)
 henon_square_configuration["py_flat"] = np.zeros_like(xx)
 
 henon_square_configuration["total_samples"] = henon_square_configuration["x_flat"].size
+
+
+lhc_square_test_configuration = {
+    'name': 'lhc_square_test',
+    'samples': 100,
+
+    'x_extents' : [0.0, 2e-3],
+    'y_extents' : [0.0, 2e-3],
+
+    'long_tracking' : 10000
+}
+
+lhc_square_test_configuration["x_sample"] = np.linspace(
+    lhc_square_test_configuration["x_extents"][0],
+    lhc_square_test_configuration["x_extents"][1],
+    lhc_square_test_configuration["samples"]
+)
+
+lhc_square_test_configuration["y_sample"] = np.linspace(
+    lhc_square_test_configuration["y_extents"][0],
+    lhc_square_test_configuration["y_extents"][1],
+    lhc_square_test_configuration["samples"]
+)
+
+xx, yy = np.meshgrid(
+    lhc_square_test_configuration["x_sample"],
+    lhc_square_test_configuration["y_sample"]
+)
+
+lhc_square_test_configuration["x_flat"] = xx.flatten()
+lhc_square_test_configuration["y_flat"] = yy.flatten()
+lhc_square_test_configuration["px_flat"] = np.zeros_like(xx)
+lhc_square_test_configuration["py_flat"] = np.zeros_like(xx)
+
+lhc_square_test_configuration["total_samples"] = lhc_square_test_configuration["x_flat"].size
