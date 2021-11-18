@@ -1,9 +1,9 @@
 executable              = execute_lhc_initial_scan.sh
 arguments               = $Fnx(file)
 
-output                  = log/exp.$(file).$(ClusterId).$(ProcId).out
-error                   = log/exp.$(file).$(ClusterId).$(ProcId).err
-log                     = log/exp.$(file).$(ClusterId).log
+output                  = ./log/exp_$Fn(file)_$(ClusterId)_$(ProcId)_out
+error                   = ./log/exp_$Fn(file)_$(ClusterId)_$(ProcId)_err
+log                     = ./log/exp_$Fn(file)_$(ClusterId)_log
 
 should_transfer_files   = YES
 
