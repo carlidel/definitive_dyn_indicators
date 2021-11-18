@@ -12,4 +12,4 @@ source /afs/cern.ch/work/c/camontan/public/definitive_dyn_indicators/venv/bin/ac
 
 which python
 
-python3 lhc_initial_scan.py $1
+python3 lhc_initial_scan.py --input $1
