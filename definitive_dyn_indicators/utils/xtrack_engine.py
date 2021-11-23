@@ -56,11 +56,11 @@ class xtrack_engine(abstract_engine):
 
         # Standard global xy_limits is 1.0 [m]
         # create lattice
-        self.tracker = xt.Tracker(_context=self.context, sequence=self.sequence, global_xy_limit=xy_wall)
+        self.tracker = xt.Tracker(_context=self.context, line=self.sequence, global_xy_limit=xy_wall)
 
     def track(self, x, px, y, py, t, p0c=6500e9):
         self.n_turns = 0
-        self.particles = xt.Particles(_context=self.context,p0c=p0c, x=x, px=px, y=y, py=py, zeta=np.zeros_like(x), delta=np.zeros_like(x))
+        self.particles = xt.Particles(_context=self.context, p0c=p0c, x=x, px=px, y=y, py=py, zeta=np.zeros_like(x), delta=np.zeros_like(x))
         self.tracker.track(self.particles, num_turns=t, turn_by_turn_monitor=False)
         
         if self.context_string == "CUDA" or self.context_string == "OPENCL":
