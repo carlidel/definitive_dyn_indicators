@@ -1,0 +1,8 @@
+numpy
+scipy
+pandas
+tqdm
+matplotlib
+xsuite
+cpymad
+cupy-cuda114
