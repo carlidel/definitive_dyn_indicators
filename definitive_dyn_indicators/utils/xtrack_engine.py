@@ -6,7 +6,6 @@ import os
 import pathlib
 
 import xobjects as xo
-import xline as xl
 import xtrack as xt
 
 from cpymad.madx import Madx
@@ -48,7 +47,7 @@ class xtrack_engine(abstract_engine):
             raise ValueError("context not valid")
 
         # load line
-        self.sequence = xl.Line.from_json(line_path)
+        self.sequence = xt.Line.from_json(line_path)
 
         # Standard global xy_limits is 1.0 [m]
         # create lattice
