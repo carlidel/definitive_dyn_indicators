@@ -20,6 +20,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN git clone --recurse-submodules https://github.com/carlidel/henon_map_cpp
 RUN pip install -e ./henon_map_cpp
 
+# install sixtracktools
+RUN git clone https://github.com/sixtrack/sixtracktools
+RUN pip install -e sixtracktools
+
+# install xline
+RUN git clone https://github.com/xsuite/xline
+RUN pip install -e xline
+
 COPY . /definitive_dyn_indicators
 
 # install python packages
