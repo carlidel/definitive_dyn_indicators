@@ -12,6 +12,7 @@ henon_square_configuration = {
     'omega_y' : 0.201,
 
     'long_tracking' : 10000000,
+    'short_tracking' : 100,
 
     'frequency_tracking' : {
         'max_power_of_two' : 14,
