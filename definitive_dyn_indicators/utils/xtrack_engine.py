@@ -4,6 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 import pathlib
+import json
 
 import xobjects as xo
 import xtrack as xt
@@ -46,8 +47,12 @@ class xtrack_engine(abstract_engine):
         else:
             raise ValueError("context not valid")
 
+        # open the line as a json file
+        with open(line_path) as f:
+            line_data = json.load(f)
+
         # load line
-        self.sequence = xt.Line.from_json(line_path)
+        self.sequence = xt.Line.from_dict(line_data)
 
         # Standard global xy_limits is 1.0 [m]
         # create lattice
