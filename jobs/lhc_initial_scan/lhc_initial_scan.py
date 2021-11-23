@@ -60,7 +60,7 @@ if __name__ == '__main__':
     # remove extension from filename
     filename = os.path.splitext(filename)[0]
     # compose output filename
-    output_filename = "initial_scan_{filename}.pkl"
+    output_filename = "initial_scan_{}.pkl".format(filename)
     print("Saving data to {}".format(output_filename))
 
     # Save data

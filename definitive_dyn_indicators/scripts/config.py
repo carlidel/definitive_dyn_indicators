@@ -52,7 +52,8 @@ lhc_square_test_configuration = {
     'x_extents' : [0.0, 2e-3],
     'y_extents' : [0.0, 2e-3],
 
-    'long_tracking' : 10000
+    'long_tracking' : 10000,
+    'short_tracking': 100,
 }
 
 lhc_square_test_configuration["x_sample"] = np.linspace(
