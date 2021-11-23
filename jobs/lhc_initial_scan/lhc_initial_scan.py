@@ -17,6 +17,10 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='LHC initial scan')
     parser.add_argument('-i', '--input', help='Input file', required=True)
 
+    parser.add_argument('--short-track', help='Short track', action='store_true', dest='short_track')
+    parser.add_argument('--long-track', help='Long track', action='store_false', dest='short_track')
+    parser.set_defaults(short_track=False)
+
     args = parser.parse_args()
 
     print("Creating the engine.")
@@ -30,7 +34,7 @@ if __name__ == '__main__':
     px_flat = lhc_config["px_flat"]
     y_flat = lhc_config["y_flat"]
     py_flat = lhc_config["py_flat"]
-    t = lhc_config["long_tracking"]
+    t = lhc_config["long_tracking"] if not args.short_track else lhc_config["short_tracking"]
 
     print("x_flat size:", x_flat.shape)
     print("px_flat size:", px_flat.shape)
