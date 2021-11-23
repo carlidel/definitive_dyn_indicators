@@ -10,9 +10,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# clone the repository
-WORKDIR /home/ubuntu
-RUN git clone https://github.com/carlidel/definitive_dyn_indicators
+COPY . /definitive_dyn_indicators
 
 # install python packages
-RUN pip install --no-cache-dir -r definitive_dyn_indicators/requirements/requirements.txt
+RUN pip install --no-cache-dir -r definitive_dyn_indicators/requirements.txt
+RUN pip install -e ./definitive_dyn_indicators
