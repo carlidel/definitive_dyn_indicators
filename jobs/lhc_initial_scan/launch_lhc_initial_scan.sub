@@ -16,6 +16,6 @@ transfer_input_files    = ./lhc_initial_scan.py, $(file)
 
 when_to_transfer_output = ON_EXIT
 
-+JobFlavour = "espresso"
++JobFlavour = "longlunch"
 
 queue file matching (../../masks/lhc_mask*.json)

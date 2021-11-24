@@ -40,6 +40,7 @@ if __name__ == '__main__':
     print("px_flat size:", px_flat.shape)
     print("y_flat size:", y_flat.shape)
     print("py_flat size:", py_flat.shape)
+    print("t value:", t)
 
     # Run engine
     print("Running the engine.")
