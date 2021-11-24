@@ -52,7 +52,7 @@ lhc_square_test_configuration = {
     'x_extents' : [0.0, 2e-3],
     'y_extents' : [0.0, 2e-3],
 
-    'long_tracking' : 100000,
+    'long_tracking' : 10000,
     'short_tracking': 100,
 }
 
