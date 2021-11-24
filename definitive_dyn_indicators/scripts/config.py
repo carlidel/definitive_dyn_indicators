@@ -47,25 +47,27 @@ henon_square_configuration["total_samples"] = henon_square_configuration["x_flat
 
 lhc_square_test_configuration = {
     'name': 'lhc_square_test',
-    'samples': 100,
+    'samples': 200,
 
     'x_extents' : [0.0, 2e-3],
     'y_extents' : [0.0, 2e-3],
 
-    'long_tracking' : 10000,
+    'long_tracking' : 100000,
     'short_tracking': 100,
 }
 
-lhc_square_test_configuration["x_sample"] = np.linspace(
+lhc_square_test_configuration["x_sample"], lhc_square_test_configuration["dx"] = np.linspace(
     lhc_square_test_configuration["x_extents"][0],
     lhc_square_test_configuration["x_extents"][1],
-    lhc_square_test_configuration["samples"]
+    lhc_square_test_configuration["samples"],
+    retstep=True
 )
 
-lhc_square_test_configuration["y_sample"] = np.linspace(
+lhc_square_test_configuration["y_sample"], lhc_square_test_configuration["dy"] = np.linspace(
     lhc_square_test_configuration["y_extents"][0],
     lhc_square_test_configuration["y_extents"][1],
-    lhc_square_test_configuration["samples"]
+    lhc_square_test_configuration["samples"],
+    retstep=True
 )
 
 xx, yy = np.meshgrid(
