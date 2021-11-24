@@ -37,5 +37,10 @@ RUN git clone https://github.com/xsuite/xobjects && \
     git clone https://github.com/xsuite/xfields && \
     pip install -e xfields
 
-COPY . /definitive_dyn_indicators
+RUN mkdir /definitive_dyn_indicators
+
+ADD masks /definitive_dyn_indicators/masks
+COPY setup.py /definitive_dyn_indicators/setup.py
+ADD definitive_dyn_indicators /definitive_dyn_indicators/definitive_dyn_indicators
+
 RUN pip install -e ./definitive_dyn_indicators
