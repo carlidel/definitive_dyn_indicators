@@ -46,7 +46,7 @@ if __name__ == '__main__':
     start = time.perf_counter()
     x, px, y, py, steps = engine.track(x_flat, px_flat, y_flat, py_flat, t)
     end = time.perf_counter()
-    print("Time: {}".format(end - start))
+    print(f"Time: {end - start}")
     # Format data
     print("Formatting data.")
     x = x.reshape(samples, -1)
@@ -60,8 +60,9 @@ if __name__ == '__main__':
     # remove extension from filename
     filename = os.path.splitext(filename)[0]
     # compose output filename
-    output_filename = "initial_scan_{}.pkl".format(filename)
-    print("Saving data to {}".format(output_filename))
+    lenght_label = "short" if args.short_track else "long"
+    output_filename = f"initial_scan_{filename}_{lenght_label}.pkl"
+    print(f"Saving data to {output_filename}")
 
     # Save data
     with open(os.path.join(OUTDIR, output_filename), 'wb') as f:
