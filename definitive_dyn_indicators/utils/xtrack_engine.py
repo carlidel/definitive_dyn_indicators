@@ -69,6 +69,18 @@ class xtrack_engine(abstract_engine):
 
         if hasattr(self, 'particles'):
             save_particles = self.particles.to_dict()
+            if self.context_string == "OPENCL":
+                import pyopencl
+                # for each pyopencl array in the dictionary, convert it to a numpy array
+                for key in save_particles.keys():
+                    if isinstance(save_particles[key], pyopencl.array.Array):
+                        save_particles[key] = save_particles[key].get()
+            if self.context_string == "CUDA":
+                import cupy
+                # for each cupy array in the dictionary, convert it to a numpy array
+                for key in save_particles.keys():
+                    if isinstance(save_particles[key], cupy.ndarray):
+                        save_particles[key] = save_particles[key].get()
         else:
             save_particles = None
 
