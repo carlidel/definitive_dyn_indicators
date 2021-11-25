@@ -28,18 +28,22 @@ py_f = np.zeros_like(x_f)
 
 
 # %%
+print("Create Engine!")
 engine = xtrack_engine(context="CUDA")
 
 
 # %%
+print("Track!")
 data_true = engine.track(x_f, px_f, y_f, py_f, n_turns*10)
 
 
 # %%
+print("Create Engine!")
 engine = xtrack_engine(context="CUDA")
 
 
 # %%
+print("Multi Track Drifting!")
 data_half = engine.track(x_f, px_f, y_f, py_f, n_turns)
 
 for i in tqdm(range(9)):
@@ -51,32 +55,6 @@ for i in tqdm(range(9)):
 
     data_maybe = engine.keep_tracking(n_turns)
 
-
-# %%
-fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(15, 5))
-
-ax1.imshow(data_true[4].reshape(samples, samples),
-           extent=extent + extent, origin='lower')
-ax2.imshow(data_maybe[4].reshape(samples, samples),
-           extent=extent + extent, origin='lower')
-ax3.imshow((data_true[4]-data_maybe[4]).reshape(samples, samples),
-           extent=extent + extent, origin='lower')
-
-
-# %%
-(data_true[4]-data_maybe[4]).reshape(samples, samples)
-
-
-# %%
-plt.figure()
-
-plt.imshow(np.log10(np.absolute((data_true[0]-data_maybe[0])/data_true[0])).reshape(samples, samples),
-           extent=extent + extent, origin='lower')
-
-plt.colorbar(label="Relative error [log10]")
-
-
-# %%
-
+print("DONE!!")
 
 

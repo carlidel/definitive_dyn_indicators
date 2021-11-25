@@ -108,9 +108,25 @@ class xtrack_engine(abstract_engine):
         elif self.context_string == "OPENCL":
             self.context = xo.ContextPyopencl(device=self.device_id)
 
-        self.particles = xp.Particles(
-            _context=self.context, **state["particles"])
-
+        if state["particles"] is not None:
+            if self.context_string == "OPENCL":
+                import pyopencl
+                # for each pyopencl array in the dictionary, convert it to a numpy array
+                for key in state["particles"].keys():
+                    if isinstance(state["particles"][key], pyopencl.array.Array):
+                        state["particles"][key] = state["particles"][key].get()
+            if self.context_string == "CUDA":
+                import cupy
+                # for each cupy array in the dictionary, convert it to a numpy array
+                for key in state["particles"].keys():
+                    if isinstance(state["particles"][key], cupy.ndarray):
+                        state["particles"][key] = state["particles"][key].get()
+                        
+            self.particles = xp.Particles(
+                _context=self.context, **state["particles"])
+        else:
+            self.particles = None
+        
         # load line
         self.sequence = xt.Line.from_dict(self.line_data)
 

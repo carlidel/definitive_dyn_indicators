@@ -1,5 +1,5 @@
 universe                = docker
-docker_image            = carlidel/dynamic_indicators:v5
+docker_image            = carlidel/dynamic_indicators:v6
 
 executable              = execute_lhc_initial_scan.sh
 arguments               = $Fnx(file)
