@@ -85,7 +85,6 @@ class xtrack_engine(abstract_engine):
         self.context_string = state["context"]
         self.line_data = state["line_data"]
         self.n_turns = state["n_turns"]
-        self.particles = xp.Particles(**state["particles"])
         self.xy_wall = state["xy_wall"]
         self.device_id = state["device_id"]
 
@@ -96,6 +95,9 @@ class xtrack_engine(abstract_engine):
             self.context = xo.ContextCupy()
         elif self.context_string == "OPENCL":
             self.context = xo.ContextPyopencl(device=self.device_id)
+
+        self.particles = xp.Particles(
+            _context=self.context, **state["particles"])
 
         # load line
         self.sequence = xt.Line.from_dict(self.line_data)
