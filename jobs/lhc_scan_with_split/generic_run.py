@@ -45,7 +45,8 @@ if __name__ == '__main__':
     else:
         print("Loading the engine")
         with open(args.input, 'rb') as f:
-            filename, current_t, engine = pickle.load(f)
+            d = pickle.load(f)
+            filename, current_t, engine = d["line_name"], d["current_t"], d["engine"]
 
     samples = lhc_config["samples"]
     t = lhc_config["tracking"]
