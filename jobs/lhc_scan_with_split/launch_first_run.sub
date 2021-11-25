@@ -12,7 +12,7 @@ should_transfer_files   = YES
 
 request_gpus            = 1
 
-transfer_input_files    = ./generic_run.py, ./config.py, $(file)
+transfer_input_files    = ./generic_run.py, ./local_config.py, $(file)
 
 when_to_transfer_output = ON_EXIT
 

@@ -9,7 +9,7 @@ import pickle
 
 
 from definitive_dyn_indicators.utils.xtrack_engine import xtrack_engine
-from .config import lhc_config
+from local_config import lhc_config
 
 OUTDIR = "/afs/cern.ch/work/c/camontan/public/definitive_dyn_indicators/data/"
 
