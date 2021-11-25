@@ -35,6 +35,8 @@ def get_lhc_mask(beam_type=1, seed=1):
 
 class xtrack_engine(abstract_engine):
     def __init__(self, line_path=get_lhc_mask(), xy_wall=1.0, context="CPU", device_id="1.0"):
+        self.xy_wall = xy_wall
+        self.device_id = device_id
         # select context
         if context == "CPU":
             self.context_string = "CPU"
@@ -44,20 +46,62 @@ class xtrack_engine(abstract_engine):
             self.context = xo.ContextCupy()
         elif context == "OPENCL":
             self.context_string = "OPENCL"
-            self.context = xo.ContextPyopencl(device=device_id)
+            self.context = xo.ContextPyopencl(device=self.device_id)
         else:
             raise ValueError("context not valid")
 
         # open the line as a json file
         with open(line_path) as f:
-            line_data = json.load(f)
+            self.line_data = json.load(f)
 
         # load line
-        self.sequence = xt.Line.from_dict(line_data)
+        self.sequence = xt.Line.from_dict(self.line_data)
 
         # Standard global xy_limits is 1.0 [m]
         # create lattice
-        self.tracker = xt.Tracker(_context=self.context, line=self.sequence, global_xy_limit=xy_wall)
+        self.tracker = xt.Tracker(_context=self.context, line=self.sequence, global_xy_limit=self.xy_wall)
+
+    def __getstate__(self):
+        if hasattr(self, 'n_turns'):
+            save_turns = self.n_turns
+        else:
+            save_turns = 0
+
+        if hasattr(self, 'particles'):
+            save_particles = self.particles.to_dict()
+        else:
+            save_particles = None
+
+        return {
+            "context": self.context_string,
+            "line_data": self.line_data,
+            "n_turns": save_turns,
+            "particles": save_particles,
+            "xy_wall": self.xy_wall,
+            "device_id": self.device_id
+        }
+    
+    def __setstate__(self, state):
+        self.context_string = state["context"]
+        self.line_data = state["line_data"]
+        self.n_turns = state["n_turns"]
+        self.particles = xp.Particles(**state["particles"])
+        self.xy_wall = state["xy_wall"]
+        self.device_id = state["device_id"]
+
+        # select context
+        if self.context_string == "CPU":
+            self.context = xo.ContextCpu()
+        elif self.context_string == "CUDA":
+            self.context = xo.ContextCupy()
+        elif self.context_string == "OPENCL":
+            self.context = xo.ContextPyopencl(device=self.device_id)
+
+        # load line
+        self.sequence = xt.Line.from_dict(self.line_data)
+
+        # create lattice
+        self.tracker = xt.Tracker(_context=self.context, line=self.sequence, global_xy_limit=self.xy_wall)
 
     def track(self, x, px, y, py, t, p0c=6500e9):
         self.n_turns = 0
@@ -94,7 +138,7 @@ class xtrack_engine(abstract_engine):
         py_data[at_turn_data < self.n_turns] = np.nan
 
         return x_data, px_data, y_data, py_data, at_turn_data
-    
+
     def keep_tracking(self, t):
         self.tracker.track(self.particles, num_turns=t,
                            turn_by_turn_monitor=False)
