@@ -22,24 +22,26 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
+    # Load data
+    print("Loading data.")
+    x_flat = lhc_config["x_flat"]
+    px_flat = lhc_config["px_flat"]
+    y_flat = lhc_config["y_flat"]
+    py_flat = lhc_config["py_flat"]
+
+    print("x_flat size:", x_flat.shape)
+    print("px_flat size:", px_flat.shape)
+    print("y_flat size:", y_flat.shape)
+    print("py_flat size:", py_flat.shape)
+
     if not args.continue_run:
         print("Creating the engine.")
         engine = xtrack_engine(context="CUDA", line_path=args.input)
-
-        # Load data
-        print("Loading data.")
-        x_flat = lhc_config["x_flat"]
-        px_flat = lhc_config["px_flat"]
-        y_flat = lhc_config["y_flat"]
-        py_flat = lhc_config["py_flat"]
-
         current_t = 0
-
         # Get filename from input
         filename = os.path.basename(args.input)
         # remove extension from filename
         filename = os.path.splitext(filename)[0]
-
     else:
         print("Loading the engine")
         with open(args.input, 'rb') as f:
@@ -48,10 +50,6 @@ if __name__ == '__main__':
     samples = lhc_config["samples"]
     t = lhc_config["tracking"]
 
-    print("x_flat size:", x_flat.shape)
-    print("px_flat size:", px_flat.shape)
-    print("y_flat size:", y_flat.shape)
-    print("py_flat size:", py_flat.shape)
     print("t value:", t)
 
     # Run engine
