@@ -2,6 +2,8 @@
 data/
 jobs/
 notebooks/
+tmp/
+tests/
 *pdf
 *jpg
 *png
