@@ -1,6 +1,9 @@
 # extras to ignore
 tmp/
 data/
+*.out
+*.err
+*.log
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
