@@ -1,7 +1,7 @@
 universe                = docker
 docker_image            = carlidel/dynamic_indicators:v8
 
-executable              = ../lhc_scan_with_split/execute_first_run.sh
+executable              = ../lhc_scan_with_split/execute_next_run.sh
 arguments               = $Fnx(file)
 
 output                  = log/run_$Fn(file)_$(ClusterId)_$(ProcId).out
@@ -20,4 +20,4 @@ requirements = regexp("V100", TARGET.CUDADeviceName)
 
 +JobFlavour = "longlunch"
 
-queue file from selected_masks.txt
+queue file from selected_engines.txt
