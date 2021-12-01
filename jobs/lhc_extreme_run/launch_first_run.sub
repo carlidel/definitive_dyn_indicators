@@ -1,7 +1,7 @@
 universe                = docker
 docker_image            = carlidel/dynamic_indicators:v8
 
-executable              = execute_first_run.sh
+executable              = ../lhc_scan_with_split/execute_first_run.sh
 arguments               = $Fnx(file)
 
 output                  = log/run_$Fn(file)_$(ClusterId)_$(ProcId).out
@@ -12,10 +12,12 @@ should_transfer_files   = YES
 
 request_gpus            = 1
 
-transfer_input_files    = ./generic_run.py, ./local_config.py, $(file)
+transfer_input_files    = ../lhc_scan_with_split/generic_run.py, ./local_config.py, $(file)
 
 when_to_transfer_output = ON_EXIT
 
-+JobFlavour = "longlunch"
+requirements = regexp("V100", TARGET.CUDADeviceName)
 
-queue file matching (../../masks/lhc_mask*.json)
++JobFlavour = "nextweek"
+
+queue file from selected_masks.txt

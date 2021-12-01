@@ -1,0 +1,6 @@
+../../masks/lhc_mask_b1_without_bb_33.json
+../../masks/lhc_mask_b1_without_bb_11.json
+../../masks/lhc_mask_b1_without_bb_21.json
+../../masks/lhc_mask_b4_without_bb_55.json
+../../masks/lhc_mask_b4_without_bb_18.json
+../../masks/lhc_mask_b4_without_bb_38.json

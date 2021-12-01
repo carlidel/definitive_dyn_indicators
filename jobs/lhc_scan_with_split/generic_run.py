@@ -93,6 +93,7 @@ if __name__ == '__main__':
     with open(os.path.join(OUTDIR, output_filename_engine), 'wb') as f:
         pickle.dump({
             "line_name": filename,
+            "config": lhc_config,
             "current_t": current_t + t,
             "engine": engine
         }, f)

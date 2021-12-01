@@ -7,10 +7,12 @@ import pathlib
 import json
 
 import xobjects as xo
+from xobjects import context_cpu
 import xtrack as xt
 import xpart as xp
 
 from cpymad.madx import Madx
+
 
 def get_lhc_mask(beam_type=1, seed=1):
     if beam_type == 1:
@@ -68,19 +70,7 @@ class xtrack_engine(abstract_engine):
             save_turns = 0
 
         if hasattr(self, 'particles'):
-            save_particles = self.particles.to_dict()
-            if self.context_string == "OPENCL":
-                import pyopencl
-                # for each pyopencl array in the dictionary, convert it to a numpy array
-                for key in save_particles.keys():
-                    if isinstance(save_particles[key], pyopencl.array.Array):
-                        save_particles[key] = save_particles[key].get()
-            if self.context_string == "CUDA":
-                import cupy
-                # for each cupy array in the dictionary, convert it to a numpy array
-                for key in save_particles.keys():
-                    if isinstance(save_particles[key], cupy.ndarray):
-                        save_particles[key] = save_particles[key].get()
+            save_particles = self.particles.copy(_context=xo.ContextCpu()).to_dict()
         else:
             save_particles = None
 
@@ -109,19 +99,6 @@ class xtrack_engine(abstract_engine):
             self.context = xo.ContextPyopencl(device=self.device_id)
 
         if state["particles"] is not None:
-            if self.context_string == "OPENCL":
-                import pyopencl
-                # for each pyopencl array in the dictionary, convert it to a numpy array
-                for key in state["particles"].keys():
-                    if isinstance(state["particles"][key], pyopencl.array.Array):
-                        state["particles"][key] = state["particles"][key].get()
-            if self.context_string == "CUDA":
-                import cupy
-                # for each cupy array in the dictionary, convert it to a numpy array
-                for key in state["particles"].keys():
-                    if isinstance(state["particles"][key], cupy.ndarray):
-                        state["particles"][key] = state["particles"][key].get()
-                        
             self.particles = xp.Particles(
                 _context=self.context, **state["particles"])
         else:

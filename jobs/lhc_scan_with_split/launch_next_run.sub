@@ -1,5 +1,5 @@
 universe                = docker
-docker_image            = carlidel/dynamic_indicators:v6
+docker_image            = carlidel/dynamic_indicators:v8
 
 executable              = execute_next_run.sh
 arguments               = $Fnx(file)
