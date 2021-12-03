@@ -20,7 +20,7 @@ requirements = regexp("V100", TARGET.CUDADeviceName)
 
 +JobFlavour = "longlunch"
 
-displacement = "none"
+displacement = none
 zeta = 0
 queue file from ../config/selected_masks.txt
 zeta = 1
