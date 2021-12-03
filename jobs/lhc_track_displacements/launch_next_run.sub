@@ -22,43 +22,43 @@ requirements = regexp("V100", TARGET.CUDADeviceName)
 
 displacement = "none"
 zeta = 0
-queue file from ../config/selected_masks
+queue file from ../config/selected_masks.txt
 zeta = 1
-queue file from ../config/selected_masks
+queue file from ../config/selected_masks.txt
 zeta = 2
-queue file from ../config/selected_masks
+queue file from ../config/selected_masks.txt
 displacement = "x"
 zeta = 0
-queue file from ../config/selected_masks
+queue file from ../config/selected_masks.txt
 zeta = 1
-queue file from ../config/selected_masks
+queue file from ../config/selected_masks.txt
 zeta = 2
-queue file from ../config/selected_masks
+queue file from ../config/selected_masks.txt
 displacement = "px"
 zeta = 0
-queue file from ../config/selected_masks
+queue file from ../config/selected_masks.txt
 zeta = 1
-queue file from ../config/selected_masks
+queue file from ../config/selected_masks.txt
 zeta = 2
-queue file from ../config/selected_masks
+queue file from ../config/selected_masks.txt
 displacement = "y"
 zeta = 0
-queue file from ../config/selected_masks
+queue file from ../config/selected_masks.txt
 zeta = 1
-queue file from ../config/selected_masks
+queue file from ../config/selected_masks.txt
 zeta = 2
-queue file from ../config/selected_masks
+queue file from ../config/selected_masks.txt
 displacement = "py"
 zeta = 0
-queue file from ../config/selected_masks
+queue file from ../config/selected_masks.txt
 zeta = 1
-queue file from ../config/selected_masks
+queue file from ../config/selected_masks.txt
 zeta = 2
-queue file from ../config/selected_masks
+queue file from ../config/selected_masks.txt
 displacement = "random"
 zeta = 0
-queue file from ../config/selected_masks
+queue file from ../config/selected_masks.txt
 zeta = 1
-queue file from ../config/selected_masks
+queue file from ../config/selected_masks.txt
 zeta = 2
-queue file from ../config/selected_masks
+queue file from ../config/selected_masks.txt
