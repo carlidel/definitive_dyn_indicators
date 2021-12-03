@@ -1,5 +1,5 @@
 universe                = docker
-docker_image            = carlidel/dynamic_indicators:v10
+docker_image            = carlidel/dynamic_indicators:v11
 
 executable              = ./execute_next_run.sh
 arguments               = $Fnx(file) $(zeta) $(displacement)

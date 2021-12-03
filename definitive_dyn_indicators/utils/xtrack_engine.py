@@ -132,7 +132,8 @@ class xtrack_engine(abstract_engine):
 
         if state["particles"] is not None:
             self.particles = xp.Particles(
-                _context=self.context, **state["particles"])
+                _context=xo.ContextCpu(), **state["particles"])
+            self.particles = self.particles.copy(_context=self.context)
         else:
             self.particles = None
         
