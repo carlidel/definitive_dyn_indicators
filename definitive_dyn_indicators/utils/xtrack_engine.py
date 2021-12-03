@@ -148,10 +148,11 @@ class xtrack_engine(abstract_engine):
         if delta is None:
             delta = np.zeros_like(x)
         self.particles = xp.Particles(
-            _context=self.context,
+            _context=xo.ContextCpu(),
             p0c=p0c,
             x=x, px=px, y=y, py=py,
             zeta=zeta, delta=delta)
+        self.particles = self.particles.copy(self.context)
         self.tracker.track(
             self.particles, num_turns=t, turn_by_turn_monitor=False)
         
