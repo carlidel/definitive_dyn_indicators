@@ -27,35 +27,35 @@ zeta = 1
 queue file from ../config/selected_masks.txt
 zeta = 2
 queue file from ../config/selected_masks.txt
-displacement = "x"
+displacement = x
 zeta = 0
 queue file from ../config/selected_masks.txt
 zeta = 1
 queue file from ../config/selected_masks.txt
 zeta = 2
 queue file from ../config/selected_masks.txt
-displacement = "px"
+displacement = px
 zeta = 0
 queue file from ../config/selected_masks.txt
 zeta = 1
 queue file from ../config/selected_masks.txt
 zeta = 2
 queue file from ../config/selected_masks.txt
-displacement = "y"
+displacement = y
 zeta = 0
 queue file from ../config/selected_masks.txt
 zeta = 1
 queue file from ../config/selected_masks.txt
 zeta = 2
 queue file from ../config/selected_masks.txt
-displacement = "py"
+displacement = py
 zeta = 0
 queue file from ../config/selected_masks.txt
 zeta = 1
 queue file from ../config/selected_masks.txt
 zeta = 2
 queue file from ../config/selected_masks.txt
-displacement = "random"
+displacement = random
 zeta = 0
 queue file from ../config/selected_masks.txt
 zeta = 1
