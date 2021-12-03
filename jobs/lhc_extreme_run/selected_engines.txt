@@ -1,6 +1,0 @@
-../../data/scan_lhc_mask_b1_without_bb_33_engine.pkl
-../../data/scan_lhc_mask_b1_without_bb_11_engine.pkl
-../../data/scan_lhc_mask_b1_without_bb_21_engine.pkl
-../../data/scan_lhc_mask_b4_without_bb_55_engine.pkl
-../../data/scan_lhc_mask_b4_without_bb_18_engine.pkl
-../../data/scan_lhc_mask_b4_without_bb_38_engine.pkl

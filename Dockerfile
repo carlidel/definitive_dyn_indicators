@@ -31,6 +31,9 @@ RUN git clone --recurse-submodules https://github.com/carlidel/henon_map_cpp && 
 RUN git clone https://github.com/xsuite/xobjects && \
     pip install -e xobjects && \
     git clone https://github.com/xsuite/xpart && \
+    cd xpart && \
+    git checkout fix/forceenevars && \
+    cd .. && \
     pip install -e xpart && \
     git clone https://github.com/xsuite/xtrack && \
     pip install -e xtrack && \

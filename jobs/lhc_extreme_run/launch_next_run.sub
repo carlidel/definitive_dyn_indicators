@@ -1,8 +1,8 @@
 universe                = docker
-docker_image            = carlidel/dynamic_indicators:v8
+docker_image            = carlidel/dynamic_indicators:v9
 
-executable              = ../lhc_scan_with_split/execute_next_run.sh
-arguments               = $Fnx(file)
+executable              = ./execute_next_run.sh
+arguments               = $Fnx(file) $(zeta)
 
 output                  = log/run_$Fn(file)_$(ClusterId)_$(ProcId).out
 error                   = log/run_$Fn(file)_$(ClusterId)_$(ProcId).err
@@ -12,7 +12,7 @@ should_transfer_files   = YES
 
 request_gpus            = 1
 
-transfer_input_files    = ../lhc_scan_with_split/generic_run.py, ./local_config.py, $(file)
+transfer_input_files    = ../config/generic_run.py, ../config/global_config.pkl, $(file)
 
 when_to_transfer_output = ON_EXIT
 
@@ -20,4 +20,9 @@ requirements = regexp("V100", TARGET.CUDADeviceName)
 
 +JobFlavour = "longlunch"
 
-queue file from selected_engines.txt
+zeta = 0
+queue file from selected_masks.txt
+zeta = 1
+queue file from selected_masks.txt
+zeta = 2
+queue file from selected_masks.txt
