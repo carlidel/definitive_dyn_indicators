@@ -81,7 +81,7 @@ if __name__ == '__main__':
         t = lhc_config["tracking"]
     else:
         if iteration < len(lhc_config["t_list"]):
-            t = lhc_config["t_list"][iteration]
+            t = lhc_config["t_list"][iteration] - current_t
         else:
             print("No more time steps available.")
             print("Using basic tracking step.")
