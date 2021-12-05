@@ -7,7 +7,8 @@ import pickle
 
 from definitive_dyn_indicators.utils.xtrack_engine import xtrack_engine
 
-OUTDIR = "/afs/cern.ch/work/c/camontan/public/definitive_dyn_indicators/data/"
+OUTDIR = "./"
+ENGINEDIR = "/afs/cern.ch/work/c/camontan/public/definitive_dyn_indicators/data/"
 CONFIG_DIR = "./"
 
 if __name__ == '__main__':
@@ -26,7 +27,15 @@ if __name__ == '__main__':
                         help="kind of time step", type=str, default="basic",
                         choices=["basic", "advanced"])
 
+    parser.add_argument('-e', '--engine', help='Engine directory', type=str,
+                        default=ENGINEDIR),
+    parser.add_argument('-o', '--output', help='Output directory', type=str,
+                        default=OUTDIR)
+
     args = parser.parse_args()
+
+    ENGINEDIR = args.engine
+    OUTDIR = args.output
 
     # Load configuration
     with open(os.path.join(CONFIG_DIR, 'global_config.pkl'), 'rb') as f:
@@ -72,7 +81,7 @@ if __name__ == '__main__':
         iteration = 0
     else:
         print("Loading the engine")
-        with open(os.path.join(OUTDIR, output_filename_engine), 'rb') as f:
+        with open(os.path.join(ENGINEDIR, output_filename_engine), 'rb') as f:
             d = pickle.load(f)
             filename, current_t, iteration, engine = d["line_name"], d["current_t"], d["iteration"], d["engine"]
 
@@ -135,7 +144,7 @@ if __name__ == '__main__':
 
     # Save engine
     print(f"Saving engine to {output_filename_engine}")
-    with open(os.path.join(OUTDIR, output_filename_engine), 'wb') as f:
+    with open(os.path.join(ENGINEDIR, output_filename_engine), 'wb') as f:
         pickle.dump({
             "line_name": filename,
             "config": lhc_config,
