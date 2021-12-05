@@ -96,53 +96,53 @@ PARENT JOB45 CHILD JOB46
 PARENT JOB46 CHILD JOB47
 PARENT JOB47 CHILD JOB48
 PARENT JOB48 CHILD JOB49
-SCRIPT POST JOB0 post_script.sh
-SCRIPT POST JOB1 post_script.sh
-SCRIPT POST JOB2 post_script.sh
-SCRIPT POST JOB3 post_script.sh
-SCRIPT POST JOB4 post_script.sh
-SCRIPT POST JOB5 post_script.sh
-SCRIPT POST JOB6 post_script.sh
-SCRIPT POST JOB7 post_script.sh
-SCRIPT POST JOB8 post_script.sh
-SCRIPT POST JOB9 post_script.sh
-SCRIPT POST JOB10 post_script.sh
-SCRIPT POST JOB11 post_script.sh
-SCRIPT POST JOB12 post_script.sh
-SCRIPT POST JOB13 post_script.sh
-SCRIPT POST JOB14 post_script.sh
-SCRIPT POST JOB15 post_script.sh
-SCRIPT POST JOB16 post_script.sh
-SCRIPT POST JOB17 post_script.sh
-SCRIPT POST JOB18 post_script.sh
-SCRIPT POST JOB19 post_script.sh
-SCRIPT POST JOB20 post_script.sh
-SCRIPT POST JOB21 post_script.sh
-SCRIPT POST JOB22 post_script.sh
-SCRIPT POST JOB23 post_script.sh
-SCRIPT POST JOB24 post_script.sh
-SCRIPT POST JOB25 post_script.sh
-SCRIPT POST JOB26 post_script.sh
-SCRIPT POST JOB27 post_script.sh
-SCRIPT POST JOB28 post_script.sh
-SCRIPT POST JOB29 post_script.sh
-SCRIPT POST JOB30 post_script.sh
-SCRIPT POST JOB31 post_script.sh
-SCRIPT POST JOB32 post_script.sh
-SCRIPT POST JOB33 post_script.sh
-SCRIPT POST JOB34 post_script.sh
-SCRIPT POST JOB35 post_script.sh
-SCRIPT POST JOB36 post_script.sh
-SCRIPT POST JOB37 post_script.sh
-SCRIPT POST JOB38 post_script.sh
-SCRIPT POST JOB39 post_script.sh
-SCRIPT POST JOB40 post_script.sh
-SCRIPT POST JOB41 post_script.sh
-SCRIPT POST JOB42 post_script.sh
-SCRIPT POST JOB43 post_script.sh
-SCRIPT POST JOB44 post_script.sh
-SCRIPT POST JOB45 post_script.sh
-SCRIPT POST JOB46 post_script.sh
-SCRIPT POST JOB47 post_script.sh
-SCRIPT POST JOB48 post_script.sh
-SCRIPT POST JOB49 post_script.sh
+SCRIPT POST JOB0 bash post_script.sh
+SCRIPT POST JOB1 bash post_script.sh
+SCRIPT POST JOB2 bash post_script.sh
+SCRIPT POST JOB3 bash post_script.sh
+SCRIPT POST JOB4 bash post_script.sh
+SCRIPT POST JOB5 bash post_script.sh
+SCRIPT POST JOB6 bash post_script.sh
+SCRIPT POST JOB7 bash post_script.sh
+SCRIPT POST JOB8 bash post_script.sh
+SCRIPT POST JOB9 bash post_script.sh
+SCRIPT POST JOB10 bash post_script.sh
+SCRIPT POST JOB11 bash post_script.sh
+SCRIPT POST JOB12 bash post_script.sh
+SCRIPT POST JOB13 bash post_script.sh
+SCRIPT POST JOB14 bash post_script.sh
+SCRIPT POST JOB15 bash post_script.sh
+SCRIPT POST JOB16 bash post_script.sh
+SCRIPT POST JOB17 bash post_script.sh
+SCRIPT POST JOB18 bash post_script.sh
+SCRIPT POST JOB19 bash post_script.sh
+SCRIPT POST JOB20 bash post_script.sh
+SCRIPT POST JOB21 bash post_script.sh
+SCRIPT POST JOB22 bash post_script.sh
+SCRIPT POST JOB23 bash post_script.sh
+SCRIPT POST JOB24 bash post_script.sh
+SCRIPT POST JOB25 bash post_script.sh
+SCRIPT POST JOB26 bash post_script.sh
+SCRIPT POST JOB27 bash post_script.sh
+SCRIPT POST JOB28 bash post_script.sh
+SCRIPT POST JOB29 bash post_script.sh
+SCRIPT POST JOB30 bash post_script.sh
+SCRIPT POST JOB31 bash post_script.sh
+SCRIPT POST JOB32 bash post_script.sh
+SCRIPT POST JOB33 bash post_script.sh
+SCRIPT POST JOB34 bash post_script.sh
+SCRIPT POST JOB35 bash post_script.sh
+SCRIPT POST JOB36 bash post_script.sh
+SCRIPT POST JOB37 bash post_script.sh
+SCRIPT POST JOB38 bash post_script.sh
+SCRIPT POST JOB39 bash post_script.sh
+SCRIPT POST JOB40 bash post_script.sh
+SCRIPT POST JOB41 bash post_script.sh
+SCRIPT POST JOB42 bash post_script.sh
+SCRIPT POST JOB43 bash post_script.sh
+SCRIPT POST JOB44 bash post_script.sh
+SCRIPT POST JOB45 bash post_script.sh
+SCRIPT POST JOB46 bash post_script.sh
+SCRIPT POST JOB47 bash post_script.sh
+SCRIPT POST JOB48 bash post_script.sh
+SCRIPT POST JOB49 bash post_script.sh
