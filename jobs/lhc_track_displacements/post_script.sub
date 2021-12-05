@@ -1,0 +1,9 @@
+executable = ./post_script.sh
+
+output                  = log/post_$(ClusterId)_$(ProcId).out
+error                   = log/post_$(ClusterId)_$(ProcId).err
+log                     = log/post_$(ClusterId).log
+
++JobFlavour = "espresso"
+
+queue
