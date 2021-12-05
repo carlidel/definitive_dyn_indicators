@@ -20,3 +20,6 @@ if __name__ == "__main__":
 
         for i, n in enumerate(names[:-1]):
             dagman.write("PARENT {} CHILD {}\n".format(n, names[i+1])) 
+
+        for i, n in enumerate(names):
+            dagman.write("SCRIPT POST {} post_script.sh\n".format(n))

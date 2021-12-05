@@ -7,7 +7,7 @@ import pickle
 
 from definitive_dyn_indicators.utils.xtrack_engine import xtrack_engine
 
-OUTDIR = "./"
+OUTDIR = "/afs/cern.ch/work/c/camontan/public/definitive_dyn_indicators/data/"
 ENGINEDIR = "/afs/cern.ch/work/c/camontan/public/definitive_dyn_indicators/data/"
 CONFIG_DIR = "./"
 
