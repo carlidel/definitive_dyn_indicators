@@ -7,4 +7,4 @@ log                     = log/post_$(ClusterId).log
 
 +JobFlavour = "espresso"
 
-queue file matching (../../data/scan*basic*nturns*.pkl)
+queue file matching (/afs/cern.ch/work/c/camontan/public/definitive_dyn_indicators/data/scan*basic*nturns*.pkl)
