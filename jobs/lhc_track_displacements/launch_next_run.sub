@@ -21,6 +21,13 @@ requirements = regexp("V100", TARGET.CUDADeviceName)
 
 +JobFlavour = "longlunch"
 
+on_exit_remove          = (ExitBySignal == False) && (ExitCode == 0)
+max_retries             = 5
+requirements = Machine =!= LastRemoteHost
+
+notification            = Error
+notify_user             = camontan@cern.ch
+
 displacement = none
 zeta = 0
 queue file from ../config/selected_masks.txt
