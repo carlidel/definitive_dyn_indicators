@@ -1,9 +1,9 @@
 executable = ./post_script.sh
 arguments = $(file)
 
-output                  = log/post_$(ClusterId)_$(ProcId).out
-error                   = log/post_$(ClusterId)_$(ProcId).err
-log                     = log/post_$(ClusterId).log
+output                  = log/out/post_$(ClusterId)_$(ProcId).out
+error                   = log/err/post_$(ClusterId)_$(ProcId).err
+log                     = log/log/post_$(ClusterId).log
 
 +JobFlavour = "espresso"
 
