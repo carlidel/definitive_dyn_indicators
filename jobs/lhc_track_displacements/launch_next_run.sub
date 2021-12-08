@@ -18,13 +18,12 @@ when_to_transfer_output = ON_EXIT_OR_EVICT
 +SpoolOnEvict = False
 transfer_output_files   = ""
 
-requirements = regexp("V100", TARGET.CUDADeviceName)
+requirements = regexp("V100", TARGET.CUDADeviceName)&&(Machine =!= LastRemoteHost)
 
 +JobFlavour = "longlunch"
 
 on_exit_remove          = (ExitBySignal == False) && (ExitCode == 0)
 max_retries             = 5
-requirements = Machine =!= LastRemoteHost
 
 notification            = Error
 notify_user             = camontan
