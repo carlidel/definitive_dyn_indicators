@@ -14,7 +14,8 @@ request_gpus            = 1
 
 transfer_input_files    = ../config/generic_run.py, ../config/global_config.pkl, $(file)
 
-when_to_transfer_output = ON_EXIT
+when_to_transfer_output = ON_EXIT_OR_EVICT
++SpoolOnEvict = False
 transfer_output_files   = ""
 
 requirements = regexp("V100", TARGET.CUDADeviceName)
@@ -26,7 +27,7 @@ max_retries             = 5
 requirements = Machine =!= LastRemoteHost
 
 notification            = Error
-notify_user             = camontan@cern.ch
+notify_user             = camontan
 
 zeta = 0
 queue file from selected_masks.txt

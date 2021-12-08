@@ -12,6 +12,6 @@ max_retries             = 5
 requirements = Machine =!= LastRemoteHost
 
 notification            = Error
-notify_user             = camontan@cern.ch
+notify_user             = camontan
 
 queue files matching (/afs/cern.ch/work/c/camontan/public/definitive_dyn_indicators/data/scan*advanced*nturns*.pkl)
