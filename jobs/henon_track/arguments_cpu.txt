@@ -1,2 +1,2 @@
-0.168 0.201 16.0 0.0 nan nan sps nan fft_tunes
-0.168 0.201 16.0 0.0 nan nan sps nan birkhoff_tunes
+0.168 0.201 16.0 0.0 nan nan sps nan none fft_tunes
+0.168 0.201 16.0 0.0 nan nan sps nan none birkhoff_tunes
