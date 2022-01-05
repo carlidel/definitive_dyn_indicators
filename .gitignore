@@ -1,6 +1,7 @@
 # extras to ignore
 tmp/
 data/
+figures/
 *.out
 *.err
 *.log

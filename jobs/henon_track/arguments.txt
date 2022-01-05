@@ -1,0 +1,3 @@
+0.168 0.201 16.0 0.0 nan nan sps nan track
+0.168 0.201 16.0 0.0 nan nan sps nan track_and_reverse
+0.168 0.201 16.0 0.0 nan nan sps nan step_track
