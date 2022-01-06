@@ -29,5 +29,6 @@ queue arguments from arguments_cpu.txt
 request_cpus            = 1
 request_gpus            = 1
 requirements = regexp("V100", TARGET.CUDADeviceName)&&(Machine =!= LastRemoteHost)
++JobFlavour = "espresso"
 
 queue arguments from arguments.txt

@@ -6,6 +6,7 @@ import datetime
 import pickle
 from tqdm import tqdm
 import h5py
+import pandas as pd
 
 from henon_map_cpp import henon_tracker
 
@@ -123,7 +124,7 @@ if __name__ == '__main__':
     if args.tracking == "track":
         # start chronometer
         start = time.time()
-        x, px, y, py, steps = engine.track(x_flat, px_flat, y_flat, py_flat, henon_config["tracking"])
+        x, px, y, py, steps = engine.track(x_flat, px_flat, y_flat, py_flat, henon_config["extreme_tracking"])
 
         data["x"] = x
         data["px"] = px
@@ -160,11 +161,11 @@ if __name__ == '__main__':
 
         engine.create(x_flat, px_flat, y_flat, py_flat)
         from_idx = np.array(
-            [0 for _ in henon_config["t_base_2"]] +
+            [0 for _ in henon_config["t_base_2"][:-1]] +
             [i for i in henon_config["t_base_2"][:-1]], dtype=int
         )
         to_idx = np.array(
-            [i for i in henon_config["t_base_2"]] +
+            [i for i in henon_config["t_base_2"][:-1]] +
             [i * 2 for i in henon_config["t_base_2"][:-1]], dtype=int
         )
         tunes = engine.engine.birkhoff_tunes(
@@ -174,9 +175,9 @@ if __name__ == '__main__':
             engine.modulation_kind, engine.omega_0,
             from_idx=from_idx, to_idx=to_idx
         )
-        for i in len(tunes):
-            data[f"tune_x/{tunes.iloc[i]['from']}/{tunes.iloc[i]['to']}"] = tunes[i]['tune_x']
-            data[f"tune_y/{tunes.iloc[i]['from']}/{tunes.iloc[i]['to']}"] = tunes[i]['tune_y']
+        for i in range(len(tunes)):
+            data[f"tune_x/{tunes.iloc[i]['from']}/{tunes.iloc[i]['to']}"] = tunes.iloc[i]['tune_x']
+            data[f"tune_y/{tunes.iloc[i]['from']}/{tunes.iloc[i]['to']}"] = tunes.iloc[i]['tune_y']
         
         # stop chronometer
         end = time.time()
@@ -188,11 +189,11 @@ if __name__ == '__main__':
         start = time.time()
         engine.create(x_flat, px_flat, y_flat, py_flat)
         from_idx = np.array(
-            [0 for _ in henon_config["t_base_2"]] +
+            [0 for _ in henon_config["t_base_2"][:-1]] +
             [i for i in henon_config["t_base_2"][:-1]], dtype=int
         )
         to_idx = np.array(
-            [i for i in henon_config["t_base_2"]] +
+            [i for i in henon_config["t_base_2"][:-1]] +
             [i * 2 for i in henon_config["t_base_2"][:-1]], dtype=int
         )
         tunes = engine.engine.fft_tunes(
@@ -202,9 +203,9 @@ if __name__ == '__main__':
             engine.modulation_kind, engine.omega_0,
             from_idx=from_idx, to_idx=to_idx
         )
-        for i in len(tunes):
-            data[f"tune_x/{tunes.iloc[i]['from']}/{tunes.iloc[i]['to']}"] = tunes[i]['tune_x']
-            data[f"tune_y/{tunes.iloc[i]['from']}/{tunes.iloc[i]['to']}"] = tunes[i]['tune_y']
+        for i in range(len(tunes)):
+            data[f"tune_x/{tunes.iloc[i]['from']}/{tunes.iloc[i]['to']}"] = tunes.iloc[i]['tune_x']
+            data[f"tune_y/{tunes.iloc[i]['from']}/{tunes.iloc[i]['to']}"] = tunes.iloc[i]['tune_y']
         # stop chronometer
         end = time.time()
         # print time in hh:mm:ss
