@@ -2,8 +2,10 @@ import numpy as np
 import argparse
 import os
 import time
+import datetime
 import pickle
 from tqdm import tqdm
+import h5py
 
 from henon_map_cpp import henon_tracker
 
@@ -86,7 +88,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     OUTDIR = args.outdir
-    filename = f"henon_ox_{args.omega_x}_oy_{args.omega_y}_modulation_{args.modulation_kind}_eps_{args.epsilon}_mu_{args.mu}_kmod_{args.kick_module}_ksig_{args.kick_sigma}_o0_{args.omega_0}_disp_{args.displacement_kind}_data_{args.tracking}.pkl"
+    filename = f"henon_ox_{args.omega_x}_oy_{args.omega_y}_modulation_{args.modulation_kind}_eps_{args.epsilon}_mu_{args.mu}_kmod_{args.kick_module}_ksig_{args.kick_sigma}_o0_{args.omega_0}_disp_{args.displacement_kind}_data_{args.tracking}.hdf5"
 
     # Load data
     print("Loading data...")
@@ -115,21 +117,12 @@ if __name__ == '__main__':
                          args.barrier, args.kick_module, args.kick_sigma,
                          args.modulation_kind, args.omega_0, args.force_CPU)
 
-    data = {
-        "omega_x": args.omega_x,
-        "omega_y": args.omega_y,
-        "epsilon": args.epsilon,
-        "mu": args.mu,
-        "barrier": args.barrier,
-        "kick_module": args.kick_module,
-        "kick_sigma": args.kick_sigma,
-        "modulation_kind": args.modulation_kind,
-        "omega_0": args.omega_0,
-
-        "tracking": args.tracking,
-    }
+    # create hdf5 file
+    data = h5py.File(os.path.join(OUTDIR, filename), "w")
 
     if args.tracking == "track":
+        # start chronometer
+        start = time.time()
         x, px, y, py, steps = engine.track(x_flat, px_flat, y_flat, py_flat, henon_config["tracking"])
 
         data["x"] = x
@@ -137,35 +130,34 @@ if __name__ == '__main__':
         data["y"] = y
         data["py"] = py
         data["steps"] = steps
+        # stop chronometer
+        end = time.time()
+        # print time in hh:mm:ss
+        print(f"Elapsed time: {datetime.timedelta(seconds=end-start)}")
     elif args.tracking == "step_track":
-        data["x"] = {}
-        data["px"] = {}
-        data["y"] = {}
-        data["py"] = {}
         for i, (t, t_sum) in tqdm(enumerate(zip(henon_config["t_diff"], henon_config["t_list"])), total=len(henon_config["t_diff"])):
             if i == 0:
                 x, px, y, py, steps = engine.track(x_flat, px_flat, y_flat, py_flat, t)
             else:
                 x, px, y, py, steps = engine.keep_tracking(t)
             
-            data["x"][t_sum] = x
-            data["px"][t_sum] = px
-            data["y"][t_sum] = y
-            data["py"][t_sum] = py
+            data[f"x/{t_sum}"] = x
+            data[f"px/{t_sum}"] = px
+            data[f"y/{t_sum}"] = y
+            data[f"py/{t_sum}"] = py
     elif args.tracking == "track_and_reverse":
-        data["x"] = {}
-        data["px"] = {}
-        data["y"] = {}
-        data["py"] = {}
         for i, (t, t_sum) in tqdm(enumerate(zip(henon_config["t_diff"], henon_config["t_list"])), total=len(henon_config["t_diff"])):
             x, px, y, py, steps = engine.track_and_reverse(
                 x_flat, px_flat, y_flat, py_flat, t)
 
-            data["x"][t_sum] = x
-            data["px"][t_sum] = px
-            data["y"][t_sum] = y
-            data["py"][t_sum] = py
+            data[f"x/{t_sum}"] = x
+            data[f"px/{t_sum}"] = px
+            data[f"y/{t_sum}"] = y
+            data[f"py/{t_sum}"] = py
     elif args.tracking == "birkhoff_tunes":
+        # start chronometer
+        start = time.time()
+
         engine.create(x_flat, px_flat, y_flat, py_flat)
         from_idx = np.array(
             [0 for _ in henon_config["t_base_2"]] +
@@ -182,8 +174,18 @@ if __name__ == '__main__':
             engine.modulation_kind, engine.omega_0,
             from_idx=from_idx, to_idx=to_idx
         )
-        data["tunes"] = tunes
+        for i in len(tunes):
+            data[f"tune_x/{tunes.iloc[i]['from']}/{tunes.iloc[i]['to']}"] = tunes[i]['tune_x']
+            data[f"tune_y/{tunes.iloc[i]['from']}/{tunes.iloc[i]['to']}"] = tunes[i]['tune_y']
+        
+        # stop chronometer
+        end = time.time()
+        # print time in hh:mm:ss
+        print(f"Time elapsed: {datetime.timedelta(seconds=end-start)}")
+
     elif args.tracking == "fft_tunes":
+        # start chronometer
+        start = time.time()
         engine.create(x_flat, px_flat, y_flat, py_flat)
         from_idx = np.array(
             [0 for _ in henon_config["t_base_2"]] +
@@ -200,9 +202,31 @@ if __name__ == '__main__':
             engine.modulation_kind, engine.omega_0,
             from_idx=from_idx, to_idx=to_idx
         )
-        data["tunes"] = tunes
+        for i in len(tunes):
+            data[f"tune_x/{tunes.iloc[i]['from']}/{tunes.iloc[i]['to']}"] = tunes[i]['tune_x']
+            data[f"tune_y/{tunes.iloc[i]['from']}/{tunes.iloc[i]['to']}"] = tunes[i]['tune_y']
+        # stop chronometer
+        end = time.time()
+        # print time in hh:mm:ss
+        print(f"Time elapsed: {datetime.timedelta(seconds=end-start)}")
+
+    # create new dataset in file
+    dataset = data.create_dataset("config", data=np.array([42,42]))
+    
+    # fill attributes of dataset
+    dataset.attrs["omega_x"] = args.omega_x
+    dataset.attrs["omega_y"] = args.omega_y
+    dataset.attrs["epsilon"] = args.epsilon
+    dataset.attrs["mu"] = args.mu
+    dataset.attrs["barrier"] = args.barrier
+    dataset.attrs["kick_module"] = args.kick_module
+    dataset.attrs["kick_sigma"] = args.kick_sigma
+    dataset.attrs["modulation_kind"] = args.modulation_kind
+    dataset.attrs["omega_0"] = args.omega_0
+    dataset.attrs["tracking"] = args.tracking
+    dataset.attrs["displacement_kind"] = args.displacement_kind
 
     # Save data
-    print(f"Saving data to {os.path.join(OUTDIR + filename)}...")
-    with open(os.path.join(OUTDIR + filename), "wb") as f:
-        pickle.dump(data, f)
+    print(f"Saving data to {os.path.join(OUTDIR + filename)}")
+    
+    data.close()
