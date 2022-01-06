@@ -18,15 +18,15 @@ when_to_transfer_output = ON_EXIT_OR_EVICT
 +SpoolOnEvict = False
 transfer_output_files   = ""
 
-on_exit_remove          = (ExitBySignal == False) && (ExitCode == 0)
-max_retries             = 5
-
 notification            = Error
 notify_user             = camontan
 
 queue arguments from arguments_cpu.txt
 
-request_cpus            = 1
+on_exit_remove          = (ExitBySignal == False) && (ExitCode == 0)
+max_retries             = 5
+
+request_cpus            = 2
 request_gpus            = 1
 requirements = regexp("V100", TARGET.CUDADeviceName)&&(Machine =!= LastRemoteHost)
 +JobFlavour = "espresso"
