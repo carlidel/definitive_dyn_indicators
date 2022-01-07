@@ -231,3 +231,10 @@ if __name__ == '__main__':
     print(f"Saving data to {os.path.join(OUTDIR + filename)}")
     
     data.close()
+
+    # Open the file finished.txt in append mode
+    file = open(os.path.join(OUTDIR, "finished.txt"), "a")
+    # Append the filename to the file
+    file.write(filename + "\n")
+    # Close the file
+    file.close()
