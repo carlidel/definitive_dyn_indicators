@@ -11,6 +11,7 @@ import pandas as pd
 from henon_map_cpp import henon_tracker
 
 OUTDIR = "/afs/cern.ch/work/c/camontan/public/definitive_dyn_indicators/data/"
+OUTDIR = "/eos/project/d/da-and-diffusion-studies/DA_Studies/Simulations/Models/dynamic_indicator_analysis/big_data"
 CONFIG_DIR = "./"
 
 class fixed_henon(object):
