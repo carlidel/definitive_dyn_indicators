@@ -7,6 +7,7 @@ import pickle
 from tqdm import tqdm
 import h5py
 import pandas as pd
+import shutil
 
 from henon_map_cpp import henon_tracker
 
@@ -121,7 +122,7 @@ if __name__ == '__main__':
                          args.modulation_kind, args.omega_0, args.force_CPU)
 
     # create hdf5 file
-    data = h5py.File(os.path.join(OUTDIR, filename), "w")
+    data = h5py.File(filename, "w")
 
     if args.tracking == "track":
         # start chronometer
@@ -233,6 +234,9 @@ if __name__ == '__main__':
     print(f"Saving data to {os.path.join(OUTDIR + filename)}")
     
     data.close()
+
+    # copy file to OUTDIR
+    shutil.copy(filename, OUTDIR)
 
     # Open the file finished.txt in append mode
     file = open(os.path.join(OUTDIR, f"{args.index_name}.txt"), "a")
