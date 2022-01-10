@@ -236,7 +236,11 @@ if __name__ == '__main__':
     data.close()
 
     # copy file to OUTDIR
+    print("Copying file to {}".format(OUTDIR))
     shutil.copy(filename, OUTDIR)
+    # delete file
+    print("Deleting file {}".format(filename))
+    os.remove(filename)
 
     # Open the file finished.txt in append mode
     file = open(os.path.join(OUTDIR, f"{args.index_name}.txt"), "a")
