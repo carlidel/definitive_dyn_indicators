@@ -1,14 +1,10 @@
-executable = ./move_files.sh
+executable = ../move_files.sh
 
-output                  = log/out/post_$(ClusterId)_$(ProcId).out
-error                   = log/err/post_$(ClusterId)_$(ProcId).err
-log                     = log/log/post_$(ClusterId).log
+output                  = ../log/out/post_$(ClusterId)_$(ProcId).out
+error                   = ../log/err/post_$(ClusterId)_$(ProcId).err
+log                     = ../log/log/post_$(ClusterId).log
 
-+JobFlavour = "espresso"
-
-on_exit_remove          = (ExitBySignal == False) && (ExitCode == 0)
-max_retries             = 5
-requirements = Machine =!= LastRemoteHost
++JobFlavour = "longlunch"
 
 notification            = Error
 notify_user             = camontan
