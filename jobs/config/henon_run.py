@@ -11,7 +11,7 @@ import pandas as pd
 from henon_map_cpp import henon_tracker
 
 OUTDIR = "/afs/cern.ch/work/c/camontan/public/definitive_dyn_indicators/data/"
-OUTDIR = "/eos/project/d/da-and-diffusion-studies/DA_Studies/Simulations/Models/dynamic_indicator_analysis/big_data"
+FINALDIR = "/eos/project/d/da-and-diffusion-studies/DA_Studies/Simulations/Models/dynamic_indicator_analysis/big_data"
 CONFIG_DIR = "./"
 
 class fixed_henon(object):
@@ -85,6 +85,7 @@ if __name__ == '__main__':
     parser.add_argument('--tracking', type=str, default="track",
                         choices=["track", "step_track", "track_and_reverse",
                                  "fft_tunes", "birkhoff_tunes"])
+    parser.add_argument('--index-name', type=str, default="mario_rossi")
 
 
     args = parser.parse_args()
@@ -234,7 +235,7 @@ if __name__ == '__main__':
     data.close()
 
     # Open the file finished.txt in append mode
-    file = open(os.path.join(OUTDIR, "finished.txt"), "a")
+    file = open(os.path.join(OUTDIR, f"{args.index_name}.txt"), "a")
     # Append the filename to the file
     file.write(filename + "\n")
     # Close the file
