@@ -35,12 +35,12 @@ with open("move_files.sub", "r") as sub_file:
     base_move = sub_file.read()
 
 # iterate for every combination of parameters
-for omega_x, omega_y in omega_list:
+for q, (omega_x, omega_y) in enumerate(omega_list):
     for k, epsilon in enumerate(epsilon_list):
         for j, (mus) in enumerate(mu_chunks):
             print(mus)
-            i = k * len(mu_list) + j
-            
+            i = q * len(epsilon_list) * len(mu_chunks) + k * len(mu_chunks) + j
+
             f_gpu = open(os.path.join(
                 script_dir, f"job_files/arguments_{i}.txt"), "w")
             f_cpu = open(os.path.join(
