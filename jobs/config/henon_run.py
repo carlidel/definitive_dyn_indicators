@@ -8,6 +8,7 @@ from tqdm import tqdm
 import h5py
 import pandas as pd
 import shutil
+import sys
 
 from henon_map_cpp import henon_tracker
 
@@ -87,12 +88,19 @@ if __name__ == '__main__':
                         choices=["track", "step_track", "track_and_reverse",
                                  "fft_tunes", "birkhoff_tunes"])
     parser.add_argument('--index-name', type=str, default="mario_rossi")
-
-
+    parser.add_argument('--overwrite', action='store_true')
+    parser.add_argument('--final-annotation', action='store_true')
+    
     args = parser.parse_args()
 
     OUTDIR = args.outdir
     filename = f"henon_ox_{args.omega_x}_oy_{args.omega_y}_modulation_{args.modulation_kind}_eps_{args.epsilon}_mu_{args.mu}_kmod_{args.kick_module}_ksig_{args.kick_sigma}_o0_{args.omega_0}_disp_{args.displacement_kind}_data_{args.tracking}.hdf5"
+
+    if not args.overwrite:
+        # check if filename is already present on FINALDIR
+        if os.path.isfile(os.path.join(FINALDIR, filename)):
+            print(f"File {filename} already present on {FINALDIR}")
+            sys.exit()
 
     # Load data
     print("Loading data...")
@@ -242,9 +250,10 @@ if __name__ == '__main__':
     print("Deleting file {}".format(filename))
     os.remove(filename)
 
-    # Open the file finished.txt in append mode
-    file = open(os.path.join(OUTDIR, f"{args.index_name}.txt"), "a")
-    # Append the filename to the file
-    file.write(filename + "\n")
-    # Close the file
-    file.close()
+    if args.final_annotation:
+        # Open the file finished.txt in append mode
+        file = open(os.path.join(OUTDIR, f"{args.index_name}.txt"), "a")
+        # Append the filename to the file
+        file.write(filename + "\n")
+        # Close the file
+        file.close()
