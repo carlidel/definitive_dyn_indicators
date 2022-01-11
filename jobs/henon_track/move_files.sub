@@ -1,12 +1,15 @@
-executable = ../move_files.sh
+executable = ./move_files.sh
+arguments = $Fnx{file}
 
-output                  = ../log/out/post_$(ClusterId)_$(ProcId).out
-error                   = ../log/err/post_$(ClusterId)_$(ProcId).err
-log                     = ../log/log/post_$(ClusterId).log
+transfer_input_files = ./move_files.py
+
+output                  = ./log/out/post_$(ClusterId)_$(ProcId).out
+error                   = ./log/err/post_$(ClusterId)_$(ProcId).err
+log                     = ./log/log/post_$(ClusterId).log
 
 +JobFlavour = "longlunch"
 
 notification            = Error
 notify_user             = camontan
 
-queue arguments from ../../../data/NAMEHERE.txt
+queue file matching (/afs/cern.ch/work/c/camontan/public/definitive_dyn_indicators/data/henon*.hdf5)

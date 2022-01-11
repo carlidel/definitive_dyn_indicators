@@ -72,21 +72,15 @@ for q, (omega_x, omega_y) in enumerate(omega_list):
             
             with open(f"job_files/henon_track_cpu_{i}.sub", 'w') as f:
                 f.write(base_cpu.replace("NUMBERHERE", str(i)))
-
-            with open(f"job_files/move_files_{i}.sub", 'w') as f:
-                f.write(base_move.replace("NAMEHERE", name))
-
-            with open(f"job_files/move_files_cpu_{i}.sub", 'w') as f:
-                f.write(base_move.replace("NAMEHERE", name + "_bis"))
             
             dagman_gpu.write(f"JOB JOB{i} henon_track_{i}.sub\n")
-            dagman_gpu.write(f"JOB POST{i} move_files_{i}.sub\n")
+            dagman_gpu.write(f"JOB POST{i} ../move_files.sub\n")
             dagman_gpu.write(f"PARENT JOB{i} CHILD POST{i}\n")
             if i != 0:
                 dagman_gpu.write(f"PARENT POST{i-1} CHILD JOB{i}\n")
 
             dagman_cpu.write(f"JOB JOB{i} henon_track_cpu_{i}.sub\n")
-            dagman_cpu.write(f"JOB POST{i} move_files_cpu_{i}.sub\n")
+            dagman_cpu.write(f"JOB POST{i} ../move_files.sub\n")
             dagman_cpu.write(f"PARENT JOB{i} CHILD POST{i}\n")
             if i != 0:
                 dagman_cpu.write(f"PARENT POST{i-1} CHILD JOB{i}\n")
