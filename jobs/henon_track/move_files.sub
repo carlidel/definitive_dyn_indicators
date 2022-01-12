@@ -1,13 +1,13 @@
-executable = ./move_files.sh
+executable = ../move_files.sh
 arguments = $Fnx{file}
 
-transfer_input_files = ./move_files.py
+transfer_input_files = ../move_files.py
 
-output                  = ./log/out/post_$(ClusterId)_$(ProcId).out
-error                   = ./log/err/post_$(ClusterId)_$(ProcId).err
-log                     = ./log/log/post_$(ClusterId).log
+output                  = ../log/out/post_$(ClusterId)_$(ProcId).out
+error                   = ../log/err/post_$(ClusterId)_$(ProcId).err
+log                     = ../log/log/post_$(ClusterId).log
 
-+JobFlavour = "longlunch"
++JobFlavour = "workday"
 
 notification            = Error
 notify_user             = camontan
