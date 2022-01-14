@@ -45,6 +45,15 @@ class fixed_henon(object):
         #print(engine.get_x())
         return self.engine.get_x(), self.engine.get_px(), self.engine.get_y(), self.engine.get_py(), self.engine.get_steps()
 
+    def track_megno(self, x, px, y, py, t_list):
+        engine = henon_tracker(x, px, y, py, self.omega_x,
+                               self.omega_y, self.force_CPU)
+
+        megno = engine.track_MEGNO(t_list, self.epsilon, self.mu, self.barrier, self.kick_module,
+                            self.kick_sigma, self.modulation_kind, self.omega_0)
+    
+        return megno
+
     def keep_tracking(self, t):
         assert(self.engine is not None)
         self.engine.track(t, self.epsilon, self.mu, self.barrier, self.kick_module,
@@ -86,9 +95,9 @@ if __name__ == '__main__':
                         choices=["none", "x", "y", "px", "py", "random"])
     parser.add_argument('--tracking', type=str, default="track",
                         choices=["track", "step_track", "track_and_reverse",
-                                 "fft_tunes", "birkhoff_tunes"])
+                                 "fft_tunes", "birkhoff_tunes", "megno"])
     parser.add_argument('--index-name', type=str, default="mario_rossi")
-    parser.add_argument('--overwrite', action='store_true')
+    parser.add_argument('--do-not-overwrite', action='store_true')
     parser.add_argument('--final-annotation', action='store_true')
     
     args = parser.parse_args()
@@ -96,7 +105,7 @@ if __name__ == '__main__':
     OUTDIR = args.outdir
     filename = f"henon_ox_{args.omega_x}_oy_{args.omega_y}_modulation_{args.modulation_kind}_eps_{args.epsilon}_mu_{args.mu}_kmod_{args.kick_module}_ksig_{args.kick_sigma}_o0_{args.omega_0}_disp_{args.displacement_kind}_data_{args.tracking}.hdf5"
 
-    if not args.overwrite:
+    if args.do_not_overwrite:
         # check if filename is already present on FINALDIR
         if os.path.isfile(os.path.join(FINALDIR, filename)):
             print(f"File {filename} already present on {FINALDIR}")
@@ -104,24 +113,30 @@ if __name__ == '__main__':
 
     # Load data
     print("Loading data...")
-    x_flat = henon_config["x_flat"]
-    px_flat = henon_config["px_flat"]
-    y_flat = henon_config["y_flat"]
-    py_flat = henon_config["py_flat"]
+    if args.tracking=="megno":
+        x_flat = np.concatenate((henon_config["x_flat"], henon_config["x_random_displacement"]))
+        px_flat = np.concatenate((henon_config["px_flat"], henon_config["px_random_displacement"]))
+        y_flat = np.concatenate((henon_config["y_flat"], henon_config["y_random_displacement"]))
+        py_flat = np.concatenate((henon_config["py_flat"], henon_config["py_random_displacement"]))
+    else:
+        x_flat = henon_config["x_flat"]
+        px_flat = henon_config["px_flat"]
+        y_flat = henon_config["y_flat"]
+        py_flat = henon_config["py_flat"]
 
-    if args.displacement_kind == "x":
-        x_flat = henon_config["x_displacement"]
-    elif args.displacement_kind == "y":
-        y_flat = henon_config["y_displacement"]
-    elif args.displacement_kind == "px":
-        px_flat = henon_config["px_displacement"]
-    elif args.displacement_kind == "py":
-        py_flat = henon_config["py_displacement"]
-    elif args.displacement_kind == "random":
-        x_flat = henon_config["x_random_displacement"]
-        y_flat = henon_config["y_random_displacement"]
-        px_flat = henon_config["px_random_displacement"]
-        py_flat = henon_config["py_random_displacement"]
+        if args.displacement_kind == "x":
+            x_flat = henon_config["x_displacement"]
+        elif args.displacement_kind == "y":
+            y_flat = henon_config["y_displacement"]
+        elif args.displacement_kind == "px":
+            px_flat = henon_config["px_displacement"]
+        elif args.displacement_kind == "py":
+            py_flat = henon_config["py_displacement"]
+        elif args.displacement_kind == "random":
+            x_flat = henon_config["x_random_displacement"]
+            y_flat = henon_config["y_random_displacement"]
+            px_flat = henon_config["px_random_displacement"]
+            py_flat = henon_config["py_random_displacement"]
 
     # Create engine
     print("Creating engine...")
@@ -157,6 +172,7 @@ if __name__ == '__main__':
             data[f"px/{t_sum}"] = px
             data[f"y/{t_sum}"] = y
             data[f"py/{t_sum}"] = py
+    
     elif args.tracking == "track_and_reverse":
         for i, (t, t_sum) in tqdm(enumerate(zip(henon_config["t_diff"], henon_config["t_list"])), total=len(henon_config["t_diff"])):
             x, px, y, py, steps = engine.track_and_reverse(
@@ -166,6 +182,20 @@ if __name__ == '__main__':
             data[f"px/{t_sum}"] = px
             data[f"y/{t_sum}"] = y
             data[f"py/{t_sum}"] = py
+    
+    elif args.tracking == "megno":
+        # start chronometer
+        start = time.time()
+        megno = engine.track_megno(
+            x_flat, px_flat, y_flat, py_flat, henon_config["t_list"])
+        # stop chronometer
+        end = time.time()
+        # print time in hh:mm:ss
+        print(f"Elapsed time: {datetime.timedelta(seconds=end-start)}")
+
+        for i in range(len(henon_config["t_list"])):
+            data[f"megno/{henon_config['t_list'][i]}"] = megno[i]
+
     elif args.tracking == "birkhoff_tunes":
         # start chronometer
         start = time.time()
@@ -243,17 +273,17 @@ if __name__ == '__main__':
     
     data.close()
 
-    # copy file to OUTDIR
-    print("Copying file to {}".format(OUTDIR))
-    shutil.copy(filename, OUTDIR)
-    # delete file
-    print("Deleting file {}".format(filename))
-    os.remove(filename)
+    # # copy file to OUTDIR
+    # print("Copying file to {}".format(OUTDIR))
+    # shutil.copy(filename, OUTDIR)
+    # # delete file
+    # print("Deleting file {}".format(filename))
+    # os.remove(filename)
 
-    if args.final_annotation:
-        # Open the file finished.txt in append mode
-        file = open(os.path.join(OUTDIR, f"{args.index_name}.txt"), "a")
-        # Append the filename to the file
-        file.write(filename + "\n")
-        # Close the file
-        file.close()
+    # if args.final_annotation:
+    #     # Open the file finished.txt in append mode
+    #     file = open(os.path.join(OUTDIR, f"{args.index_name}.txt"), "a")
+    #     # Append the filename to the file
+    #     file.write(filename + "\n")
+    #     # Close the file
+    #     file.close()

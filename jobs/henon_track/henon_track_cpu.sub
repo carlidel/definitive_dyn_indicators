@@ -1,18 +1,15 @@
 universe                = docker
-docker_image            = carlidel/dynamic_indicators:v14
+docker_image            = carlidel/dynamic_indicators:vn1
 
-executable              = ../henon_track.sh
+executable              = ./henon_track.sh
 
-output                  = ../log/out/run_$Fn(file)_$(ClusterId)_$(ProcId).out
-error                   = ../log/err/run_$Fn(file)_$(ClusterId)_$(ProcId).err
-log                     = ../log/log/run_$(ClusterId).log
+output                  = ./log/out/run_$Fn(file)_$(ClusterId)_$(ProcId).out
+error                   = ./log/err/run_$Fn(file)_$(ClusterId)_$(ProcId).err
+log                     = ./log/log/run_$(ClusterId).log
 
 should_transfer_files   = YES
 
-request_cpus            = 4
-+JobFlavour = "longlunch"
-
-transfer_input_files    = ../../config/henon_run.py, ../../config/henon_config.pkl
+transfer_input_files    = ../config/henon_run.py, ../config/henon_config.pkl
 
 when_to_transfer_output = ON_EXIT_OR_EVICT
 +SpoolOnEvict = False
@@ -21,4 +18,10 @@ transfer_output_files   = ""
 notification            = Error
 notify_user             = camontan
 
-queue arguments from arguments_cpu_NUMBERHERE.txt
+on_exit_remove          = (ExitBySignal == False) && (ExitCode == 0)
+max_retries             = 5
+
+request_cpus            = 4
++JobFlavour = "longlunch"
+
+queue arguments from arguments_cpu.txt
