@@ -1,0 +1,10 @@
+universe = docker
+docker_image            = carlidel/dynamic_indicators:test_eos
+
+executable = ./test.sh
+
+output                  = ./post_$(ClusterId)_$(ProcId).out
+error                   = ./post_$(ClusterId)_$(ProcId).err
+log                     = ./post_$(ClusterId).log
+
+queue 1
