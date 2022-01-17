@@ -1,4 +1,5 @@
 import numpy as np
+import numpy.random
 from numpy.random import MT19937
 from numpy.random import RandomState, SeedSequence
 import pickle
@@ -21,13 +22,14 @@ def sample_4d_displacement_on_a_sphere():
 
 lhc_config = {
     'name': 'lhc_square_universal_config',
-    'samples': 1000,
+    'samples': 200,
     'random_seed': random_seed,
 
     'x_extents': [0.0, 2e-3],
     'y_extents': [0.0, 2e-3],
 
     'tracking': 10000,
+    'long_tracking': 10000000,
 
     't_base_10': np.logspace(1, 5, 29, dtype=int),
     't_base_2': np.logspace(1, 17, 17, dtype=int, base=2),

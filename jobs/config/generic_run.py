@@ -25,7 +25,7 @@ if __name__ == '__main__':
                         choices=["none", "x", "y", "px", "py", "random"])
     parser.add_argument('-t', '--time-step',
                         help="kind of time step", type=str, default="basic",
-                        choices=["basic", "advanced"])
+                        choices=["basic", "advanced", "long"])
 
     parser.add_argument('-e', '--engine', help='Engine directory', type=str,
                         default=ENGINEDIR),
@@ -88,6 +88,8 @@ if __name__ == '__main__':
     samples = lhc_config["samples"]
     if args.time_step == "basic":
         t = lhc_config["tracking"]
+    elif args.time_step == "long":
+        t = lhc_config["long_tracking"]
     else:
         if iteration < len(lhc_config["t_list"]):
             t = lhc_config["t_list"][iteration] - current_t
@@ -104,11 +106,10 @@ if __name__ == '__main__':
     print("Running the engine.")
     start = time.perf_counter()
     if not args.continue_run:
-        sorted_particles, _ = engine.track(
-            x_flat, px_flat, y_flat, py_flat, t, zeta=z_flat,
-            return_sorted_particles=True)
+        engine.track(x_flat, px_flat, y_flat, py_flat, t, zeta=z_flat)
     else:
-        sorted_particles, _ = engine.keep_tracking(t, return_sorted_particles=True)
+        engine.keep_tracking(t)
+    sorted_particles = engine.sort_particles()
     end = time.perf_counter()
 
     # format time in hh:mm:ss
