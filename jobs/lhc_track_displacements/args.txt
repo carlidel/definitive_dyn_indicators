@@ -1,18 +1,108 @@
-../../masks/lhc_mask_b1_without_bb_33.json 0 advanced_full 
-../../masks/lhc_mask_b1_without_bb_11.json 0 advanced_full 
-../../masks/lhc_mask_b1_without_bb_21.json 0 advanced_full 
-../../masks/lhc_mask_b4_without_bb_55.json 0 advanced_full 
-../../masks/lhc_mask_b4_without_bb_18.json 0 advanced_full 
-../../masks/lhc_mask_b4_without_bb_38.json 0 advanced_full 
-../../masks/lhc_mask_b1_without_bb_33.json 1 advanced_full 
-../../masks/lhc_mask_b1_without_bb_11.json 1 advanced_full 
-../../masks/lhc_mask_b1_without_bb_21.json 1 advanced_full 
-../../masks/lhc_mask_b4_without_bb_55.json 1 advanced_full 
-../../masks/lhc_mask_b4_without_bb_18.json 1 advanced_full 
-../../masks/lhc_mask_b4_without_bb_38.json 1 advanced_full 
-../../masks/lhc_mask_b1_without_bb_33.json 2 advanced_full 
-../../masks/lhc_mask_b1_without_bb_11.json 2 advanced_full 
-../../masks/lhc_mask_b1_without_bb_21.json 2 advanced_full 
-../../masks/lhc_mask_b4_without_bb_55.json 2 advanced_full 
-../../masks/lhc_mask_b4_without_bb_18.json 2 advanced_full 
-../../masks/lhc_mask_b4_without_bb_38.json 2 advanced_full 
+../../masks/lhc_mask_b1_without_bb_33.json 0 advanced_full none
+../../masks/lhc_mask_b1_without_bb_33.json 0 advanced_full x
+../../masks/lhc_mask_b1_without_bb_33.json 0 advanced_full y
+../../masks/lhc_mask_b1_without_bb_33.json 0 advanced_full px
+../../masks/lhc_mask_b1_without_bb_33.json 0 advanced_full py
+../../masks/lhc_mask_b1_without_bb_33.json 0 advanced_full random
+../../masks/lhc_mask_b1_without_bb_11.json 0 advanced_full none
+../../masks/lhc_mask_b1_without_bb_11.json 0 advanced_full x
+../../masks/lhc_mask_b1_without_bb_11.json 0 advanced_full y
+../../masks/lhc_mask_b1_without_bb_11.json 0 advanced_full px
+../../masks/lhc_mask_b1_without_bb_11.json 0 advanced_full py
+../../masks/lhc_mask_b1_without_bb_11.json 0 advanced_full random
+../../masks/lhc_mask_b1_without_bb_21.json 0 advanced_full none
+../../masks/lhc_mask_b1_without_bb_21.json 0 advanced_full x
+../../masks/lhc_mask_b1_without_bb_21.json 0 advanced_full y
+../../masks/lhc_mask_b1_without_bb_21.json 0 advanced_full px
+../../masks/lhc_mask_b1_without_bb_21.json 0 advanced_full py
+../../masks/lhc_mask_b1_without_bb_21.json 0 advanced_full random
+../../masks/lhc_mask_b4_without_bb_55.json 0 advanced_full none
+../../masks/lhc_mask_b4_without_bb_55.json 0 advanced_full x
+../../masks/lhc_mask_b4_without_bb_55.json 0 advanced_full y
+../../masks/lhc_mask_b4_without_bb_55.json 0 advanced_full px
+../../masks/lhc_mask_b4_without_bb_55.json 0 advanced_full py
+../../masks/lhc_mask_b4_without_bb_55.json 0 advanced_full random
+../../masks/lhc_mask_b4_without_bb_18.json 0 advanced_full none
+../../masks/lhc_mask_b4_without_bb_18.json 0 advanced_full x
+../../masks/lhc_mask_b4_without_bb_18.json 0 advanced_full y
+../../masks/lhc_mask_b4_without_bb_18.json 0 advanced_full px
+../../masks/lhc_mask_b4_without_bb_18.json 0 advanced_full py
+../../masks/lhc_mask_b4_without_bb_18.json 0 advanced_full random
+../../masks/lhc_mask_b4_without_bb_38.json 0 advanced_full none
+../../masks/lhc_mask_b4_without_bb_38.json 0 advanced_full x
+../../masks/lhc_mask_b4_without_bb_38.json 0 advanced_full y
+../../masks/lhc_mask_b4_without_bb_38.json 0 advanced_full px
+../../masks/lhc_mask_b4_without_bb_38.json 0 advanced_full py
+../../masks/lhc_mask_b4_without_bb_38.json 0 advanced_full random
+../../masks/lhc_mask_b1_without_bb_33.json 1 advanced_full none
+../../masks/lhc_mask_b1_without_bb_33.json 1 advanced_full x
+../../masks/lhc_mask_b1_without_bb_33.json 1 advanced_full y
+../../masks/lhc_mask_b1_without_bb_33.json 1 advanced_full px
+../../masks/lhc_mask_b1_without_bb_33.json 1 advanced_full py
+../../masks/lhc_mask_b1_without_bb_33.json 1 advanced_full random
+../../masks/lhc_mask_b1_without_bb_11.json 1 advanced_full none
+../../masks/lhc_mask_b1_without_bb_11.json 1 advanced_full x
+../../masks/lhc_mask_b1_without_bb_11.json 1 advanced_full y
+../../masks/lhc_mask_b1_without_bb_11.json 1 advanced_full px
+../../masks/lhc_mask_b1_without_bb_11.json 1 advanced_full py
+../../masks/lhc_mask_b1_without_bb_11.json 1 advanced_full random
+../../masks/lhc_mask_b1_without_bb_21.json 1 advanced_full none
+../../masks/lhc_mask_b1_without_bb_21.json 1 advanced_full x
+../../masks/lhc_mask_b1_without_bb_21.json 1 advanced_full y
+../../masks/lhc_mask_b1_without_bb_21.json 1 advanced_full px
+../../masks/lhc_mask_b1_without_bb_21.json 1 advanced_full py
+../../masks/lhc_mask_b1_without_bb_21.json 1 advanced_full random
+../../masks/lhc_mask_b4_without_bb_55.json 1 advanced_full none
+../../masks/lhc_mask_b4_without_bb_55.json 1 advanced_full x
+../../masks/lhc_mask_b4_without_bb_55.json 1 advanced_full y
+../../masks/lhc_mask_b4_without_bb_55.json 1 advanced_full px
+../../masks/lhc_mask_b4_without_bb_55.json 1 advanced_full py
+../../masks/lhc_mask_b4_without_bb_55.json 1 advanced_full random
+../../masks/lhc_mask_b4_without_bb_18.json 1 advanced_full none
+../../masks/lhc_mask_b4_without_bb_18.json 1 advanced_full x
+../../masks/lhc_mask_b4_without_bb_18.json 1 advanced_full y
+../../masks/lhc_mask_b4_without_bb_18.json 1 advanced_full px
+../../masks/lhc_mask_b4_without_bb_18.json 1 advanced_full py
+../../masks/lhc_mask_b4_without_bb_18.json 1 advanced_full random
+../../masks/lhc_mask_b4_without_bb_38.json 1 advanced_full none
+../../masks/lhc_mask_b4_without_bb_38.json 1 advanced_full x
+../../masks/lhc_mask_b4_without_bb_38.json 1 advanced_full y
+../../masks/lhc_mask_b4_without_bb_38.json 1 advanced_full px
+../../masks/lhc_mask_b4_without_bb_38.json 1 advanced_full py
+../../masks/lhc_mask_b4_without_bb_38.json 1 advanced_full random
+../../masks/lhc_mask_b1_without_bb_33.json 2 advanced_full none
+../../masks/lhc_mask_b1_without_bb_33.json 2 advanced_full x
+../../masks/lhc_mask_b1_without_bb_33.json 2 advanced_full y
+../../masks/lhc_mask_b1_without_bb_33.json 2 advanced_full px
+../../masks/lhc_mask_b1_without_bb_33.json 2 advanced_full py
+../../masks/lhc_mask_b1_without_bb_33.json 2 advanced_full random
+../../masks/lhc_mask_b1_without_bb_11.json 2 advanced_full none
+../../masks/lhc_mask_b1_without_bb_11.json 2 advanced_full x
+../../masks/lhc_mask_b1_without_bb_11.json 2 advanced_full y
+../../masks/lhc_mask_b1_without_bb_11.json 2 advanced_full px
+../../masks/lhc_mask_b1_without_bb_11.json 2 advanced_full py
+../../masks/lhc_mask_b1_without_bb_11.json 2 advanced_full random
+../../masks/lhc_mask_b1_without_bb_21.json 2 advanced_full none
+../../masks/lhc_mask_b1_without_bb_21.json 2 advanced_full x
+../../masks/lhc_mask_b1_without_bb_21.json 2 advanced_full y
+../../masks/lhc_mask_b1_without_bb_21.json 2 advanced_full px
+../../masks/lhc_mask_b1_without_bb_21.json 2 advanced_full py
+../../masks/lhc_mask_b1_without_bb_21.json 2 advanced_full random
+../../masks/lhc_mask_b4_without_bb_55.json 2 advanced_full none
+../../masks/lhc_mask_b4_without_bb_55.json 2 advanced_full x
+../../masks/lhc_mask_b4_without_bb_55.json 2 advanced_full y
+../../masks/lhc_mask_b4_without_bb_55.json 2 advanced_full px
+../../masks/lhc_mask_b4_without_bb_55.json 2 advanced_full py
+../../masks/lhc_mask_b4_without_bb_55.json 2 advanced_full random
+../../masks/lhc_mask_b4_without_bb_18.json 2 advanced_full none
+../../masks/lhc_mask_b4_without_bb_18.json 2 advanced_full x
+../../masks/lhc_mask_b4_without_bb_18.json 2 advanced_full y
+../../masks/lhc_mask_b4_without_bb_18.json 2 advanced_full px
+../../masks/lhc_mask_b4_without_bb_18.json 2 advanced_full py
+../../masks/lhc_mask_b4_without_bb_18.json 2 advanced_full random
+../../masks/lhc_mask_b4_without_bb_38.json 2 advanced_full none
+../../masks/lhc_mask_b4_without_bb_38.json 2 advanced_full x
+../../masks/lhc_mask_b4_without_bb_38.json 2 advanced_full y
+../../masks/lhc_mask_b4_without_bb_38.json 2 advanced_full px
+../../masks/lhc_mask_b4_without_bb_38.json 2 advanced_full py
+../../masks/lhc_mask_b4_without_bb_38.json 2 advanced_full random

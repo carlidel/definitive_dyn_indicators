@@ -1,7 +1,7 @@
 #!/bin/bash
-python3 generic_run.py --input $1 -z $2 -t $3 
+python3 generic_run.py --input $1 -z $2 -t $3 -d $4
 
-echo "Executed $1, $2, $3"
+echo "Executed $1, $2, $3, $4"
 
 echo "Moving files to the output directory..."
 
