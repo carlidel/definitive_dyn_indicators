@@ -42,6 +42,8 @@ lhc_config = {
 
 lhc_config['t_list'] = np.concatenate((lhc_config['t_base_10'], lhc_config['t_base_2'], np.arange(10000, 100000, 10000), np.arange(100000, 130001, 10000)[1:]))
 lhc_config['t_list'] = np.sort(lhc_config['t_list'])
+# remove duplicates from t_list
+lhc_config['t_list'] = np.unique(lhc_config['t_list'])
 
 lhc_config['t_diff'] = np.concatenate(
     ([lhc_config['t_list'][0]], np.diff(lhc_config['t_list']))).astype(int)
