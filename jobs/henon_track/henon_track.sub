@@ -1,5 +1,5 @@
 universe                = docker
-docker_image            = carlidel/dynamic_indicators:vn1
+docker_image            = carlidel/dynamic_indicators:vn2
 
 executable              = ./henon_track.sh
 
