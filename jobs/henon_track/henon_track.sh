@@ -5,7 +5,7 @@ echo "Executed: python3 henon_run.py --omega-x $1 --omega-y $2 --epsilon $3 --mu
 
 echo "Moving files to the output directory..."
 
-xrdcp *.hdf5 root://eosuser.cern.ch//eos/project/d/da-and-diffusion-studies/DA_Studies/Simulations/Models/dynamic_indicator_analysis/big_data/
+xrdcp *.hdf5 root://eosuser.cern.ch//eos/project/d/da-and-diffusion-studies/DA_Studies/Simulations/Models/dynamic_indicator_analysis/big_data/ --force
 
 echo "Moved files to the output directory!"
 
