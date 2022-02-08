@@ -36,18 +36,20 @@ class fixed_henon(object):
         )
 
     def track(self, x, px, y, py, t):
+        print("Tracking at t = {}".format(t))
         self.engine = henon_tracker(x, px, y, py, self.force_CPU)
+        print("Modulation")
         self.engine.compute_a_modulation(
             self.max_t, self.omega_x, self.omega_y, self.epsilon,
             self.modulation_kind, self.omega_0, offset=0
         )
         self.engine.track(t, self.mu, self.barrier, self.kick_module, False)
-
+        print("Tracking called, returning...")
         return self.engine.get_x(), self.engine.get_px(), self.engine.get_y(), self.engine.get_py(), self.engine.get_steps()
 
     def track_megno(self, x, px, y, py, t_list):
         engine = henon_tracker(x, px, y, py, self.force_CPU)
-        self.engine.compute_a_modulation(
+        engine.compute_a_modulation(
             self.max_t, self.omega_x, self.omega_y, self.epsilon,
             self.modulation_kind, self.omega_0, offset=0
         )
@@ -61,16 +63,13 @@ class fixed_henon(object):
 
         return self.engine.get_x(), self.engine.get_px(), self.engine.get_y(), self.engine.get_py(), self.engine.get_steps()
 
-    def track_and_reverse(self, x, px, y, py, t):
-        engine = henon_tracker(x, px, y, py, self.force_CPU)
-        self.engine.compute_a_modulation(
-            self.max_t, self.omega_x, self.omega_y, self.epsilon,
-            self.modulation_kind, self.omega_0, offset=0
-        )
-        engine.track(t, self.mu, self.barrier, self.kick_module, False)
-        engine.track(t, self.mu, self.barrier, self.kick_module, True)
+    def track_and_reverse(self, t):
+        assert(self.engine is not None)
+        self.engine.reset()
+        self.engine.track(t, self.mu, self.barrier, self.kick_module, False)
+        self.engine.track(t, self.mu, self.barrier, self.kick_module, True)
 
-        return engine.get_x(), engine.get_px(), engine.get_y(), engine.get_py(), engine.get_steps()
+        return self.engine.get_x(), self.engine.get_px(), self.engine.get_y(), self.engine.get_py(), self.engine.get_steps()
 
 
 def henon_run(omega_x, omega_y, modulation_kind, epsilon, mu, kick_module, omega_0, displacement_kind, tracking, outdir, henon_config, force_CPU=False):
@@ -107,17 +106,22 @@ def henon_run(omega_x, omega_y, modulation_kind, epsilon, mu, kick_module, omega
             py_flat = henon_config["py_random_displacement"]
 
     # Create engine
-    print("Creating engine...")
+    print("Instatiating engine...")
     engine = fixed_henon(omega_x, omega_y, epsilon, mu,
                          henon_config["barrier"], kick_module,
-                         modulation_kind, omega_0, force_CPU)
+                         modulation_kind, omega_0,
+                         max_t=henon_config["extreme_tracking"], force_CPU=force_CPU)
 
     # create hdf5 file
-    data = h5py.File(outdir, "w")
+
+    filename = f"henon_ox_{omega_x}_oy_{omega_y}_modulation_{modulation_kind}_eps_{epsilon}_mu_{mu}_kmod_{kick_module}_o0_{omega_0}_disp_{displacement_kind}_data_{tracking}.hdf5"
+
+    data = h5py.File(os.path.join(outdir, filename) , "w")
 
     if tracking == "track":
         # start chronometer
         start = time.time()
+        print("Tracking...")
         x, px, y, py, steps = engine.track(
             x_flat, px_flat, y_flat, py_flat, henon_config["extreme_tracking"])
 
@@ -144,9 +148,10 @@ def henon_run(omega_x, omega_y, modulation_kind, epsilon, mu, kick_module, omega
             data[f"py/{t_sum}"] = py
 
     elif tracking == "track_and_reverse":
-        for i, (t, t_sum) in tqdm(enumerate(zip(henon_config["t_diff"], henon_config["t_list"])), total=len(henon_config["t_diff"])):
-            x, px, y, py, steps = engine.track_and_reverse(
-                x_flat, px_flat, y_flat, py_flat, t)
+        print("Creating engine")
+        engine.create(x_flat, px_flat, y_flat, py_flat)
+        for i, (t, t_sum) in tqdm(enumerate(zip(henon_config["t_list"], henon_config["t_list"])), total=len(henon_config["t_list"])):
+            x, px, y, py, steps = engine.track_and_reverse(t)
 
             data[f"x/{t_sum}"] = x
             data[f"px/{t_sum}"] = px
@@ -181,10 +186,8 @@ def henon_run(omega_x, omega_y, modulation_kind, epsilon, mu, kick_module, omega
         )
         tunes = engine.engine.birkhoff_tunes(
             henon_config["t_base_2"][-1],
-            engine.epsilon, engine.mu, engine.barrier,
-            engine.kick_module, engine.kick_sigma,
-            engine.modulation_kind, engine.omega_0,
-            from_idx=from_idx, to_idx=to_idx
+            engine.mu, engine.barrier,
+            engine.kick_module, from_idx=from_idx, to_idx=to_idx
         )
         for i in range(len(tunes)):
             data[f"tune_x/{tunes.iloc[i]['from']}/{tunes.iloc[i]['to']}"] = tunes.iloc[i]['tune_x']
@@ -209,10 +212,8 @@ def henon_run(omega_x, omega_y, modulation_kind, epsilon, mu, kick_module, omega
         )
         tunes = engine.engine.fft_tunes(
             henon_config["t_base_2"][-1],
-            engine.epsilon, engine.mu, engine.barrier,
-            engine.kick_module, engine.kick_sigma,
-            engine.modulation_kind, engine.omega_0,
-            from_idx=from_idx, to_idx=to_idx
+            engine.mu, engine.barrier,
+            engine.kick_module, from_idx=from_idx, to_idx=to_idx
         )
         for i in range(len(tunes)):
             data[f"tune_x/{tunes.iloc[i]['from']}/{tunes.iloc[i]['to']}"] = tunes.iloc[i]['tune_x']

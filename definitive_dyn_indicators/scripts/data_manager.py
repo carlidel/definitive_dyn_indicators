@@ -1,3 +1,4 @@
+from fileinput import filename
 import numpy as np
 import pandas as pd
 import h5py
@@ -40,14 +41,15 @@ HENON_BASE_CONFIG = {
 
     't_base_10': np.logspace(1, 6, 51, dtype=int),
     't_base_2': np.logspace(1, 20, 20, dtype=int, base=2),
-    't_linear': np.linspace(100, 1000000, 1000, dtype=int),
+    't_linear': np.linspace(1000, 1000000, 1000, dtype=int),
+    't_base': np.arange(1, 1001, 1, dtype=int),
 
     'barrier': 10.0
 }
 
 def refresh_henon_config(henon_config):
     henon_config['t_list'] = np.concatenate(
-        (henon_config['t_base_10'], henon_config['t_base_2'], henon_config['t_linear'])).astype(int)
+        (henon_config['t_base_10'], henon_config['t_base_2'], henon_config['t_linear'], henon_config['t_base'])).astype(int)
     henon_config['t_list'] = np.unique(henon_config['t_list']).astype(int)
 
     henon_config['t_diff'] = np.concatenate(
@@ -111,7 +113,6 @@ SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
 
 class data_manager(object):
     DATA_DIR = os.path.join(SCRIPT_DIR, "../../data/")
-    CONFIG_DIR = os.path.join(SCRIPT_DIR, "../../jobs/config/")
 
     @staticmethod
     def parse_filename(filename):
@@ -141,21 +142,22 @@ class data_manager(object):
 
     def refresh_files(self):
         self.file_list = os.listdir(self.DATA_DIR)
-
-        d_list = []
+        self.file_list = list(filter(lambda x: x.startswith("henon_ox"), self.file_list))
+        if len(self.file_list) == 0:
+            print("No data files found.")
+            self.groups = None
+            return
+        self.d_list = []
+        self.groups = set()
         for filename in self.file_list:
             d = self.parse_filename(filename)
+            t = tuple(d.values())
+            # inser t in set
+            self.groups.add(t)
             d["filename"] = filename
-            d_list.append(d)
+            self.d_list.append(d)
 
-        self.df = pd.DataFrame(d_list)
-        self.unique = {}
-        for col in self.df:
-            self.unique[col] = self.df[col].unique()
-        self.df_group = self.df.groupby(by=["omega_x", "omega_y", "modulation_kind",
-                                        "epsilon", "mu", "kick_module", "kick_sigma", "omega_0"], dropna=False)
-
-    def __init__(self, data_dir=None, config_dir=None):
+    def __init__(self, data_dir=None):
         if data_dir is not None:
             self.DATA_DIR = data_dir
         
@@ -166,7 +168,7 @@ class data_manager(object):
         return self.henon_config
 
     def get_groups(self):
-        return list(self.df_group.indices.keys())
+        return self.groups
 
     def get_times(self, times=None):
         if times is None:
@@ -194,18 +196,18 @@ class data_manager(object):
 
     def get_file_from_group(self, group, displacement_kind, tracking):
         print(f"Getting file for group {group} with displacement {displacement_kind} and tracking {tracking}!")
-        df_g = self.df_group.get_group(group)
-        df_g = df_g[(df_g["displacement_kind"] == displacement_kind) & (df_g["tracking"] == tracking)]
-        if df_g.shape[0] == 1:
-            return h5py.File(os.path.join(self.DATA_DIR, df_g["filename"].iloc[0]), mode='r')
-        else:
-            print("Generating {} on the fly".format(group))
-            hr.henon_run(
-                group[0], group[1], group[2], group[3], group[4], group[5], group[6],
-                displacement_kind, tracking, self.DATA_DIR, self.henon_config
-            )
-            self.refresh_files()
-            return self.get_file_from_group(group, displacement_kind, tracking)
+        
+        filename = self.get_filename(group[0], group[1], group[2], group[3], group[4], group[5], group[6], displacement_kind, tracking)
+        if filename in self.file_list:
+            return h5py.File(os.path.join(self.DATA_DIR, filename), mode='r')
+        
+        print("Generating {} on the fly".format(group))
+        hr.henon_run(
+            group[0], group[1], group[2], group[3], group[4], group[5], group[6],
+            displacement_kind, tracking, self.DATA_DIR, self.henon_config
+        )
+        self.refresh_files()
+        return self.get_file_from_group(group, displacement_kind, tracking)
 
     def initial_radius(self):
         return np.sqrt(self.henon_config["x_flat"]**2 + self.henon_config["y_flat"]**2 + self.henon_config["px_flat"]**2 + self.henon_config["py_flat"]**2)
