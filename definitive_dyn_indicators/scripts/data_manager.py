@@ -355,6 +355,56 @@ class data_manager(object):
         f.close()
         return data
 
+    def tangent_map(self, group, times=None):
+        times = self.get_times(times)
+        f = self.get_file_from_group(group, "none", "tangent_map")
+        data = {}
+        for t in tqdm(times):
+            data[t] = np.log10(np.sqrt(f[f"tangent_map/{t}"][:])) / t
+        data = pd.DataFrame(data=data)
+        f.close()
+        return data
+
+    def fft_tunes(self, group, time_tresh=None):
+        f = self.get_file_from_group(group, "none", "fft_tunes")
+        data_x = {}
+        data_y = {}
+        for t_from in f["tune_x"].keys():
+            data_x[t_from] = {}
+            data_y[t_from] = {}
+            for t_to in f["tune_x"][t_from].keys():
+                data_x[t_from][t_to] = f[f"tune_x/{t_from}/{t_to}"][:]
+                data_y[t_from][t_to] = f[f"tune_y/{t_from}/{t_to}"][:]
+        f.close()
+        return compute_tune_indicator_from_dict((data_x, data_y), time_tresh)
+
+    def birkhoff_tunes(self, group, time_tresh=None):
+        f = self.get_file_from_group(group, "none", "birkhoff_tunes")
+        data_x = {}
+        data_y = {}
+        for t_from in f["tune_x"].keys():
+            data_x[t_from] = {}
+            data_y[t_from] = {}
+            for t_to in f["tune_x"][t_from].keys():
+                data_x[t_from][t_to] = f[f"tune_x/{t_from}/{t_to}"][:]
+                data_y[t_from][t_to] = f[f"tune_y/{t_from}/{t_to}"][:]
+        f.close()
+        return compute_tune_indicator_from_dict((data_x, data_y), time_tresh)
+
+
+def compute_tune_indicator_from_dict(double_dict, time_tresh=None):
+    tx, ty = double_dict
+    time_list = list(sorted(tx['0'].keys(), key=lambda x: int(x)))
+    data = {}
+    for t in time_list:
+        if time_tresh is None or int(t) <= time_tresh:
+            if t in tx:
+                diff_x = np.power(tx[t][str(int(t)*2)] - tx['0'][t], 2)
+                diff_y = np.power(ty[t][str(int(t)*2)] - ty['0'][t], 2)
+                data[int(t)] = np.sqrt(diff_x + diff_y)
+    data = pd.DataFrame(data=data)
+    return data
+
 
 @njit(parallel=True)
 def convolution(data, kernel_size, mean_out, std_out):

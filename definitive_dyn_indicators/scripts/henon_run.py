@@ -57,6 +57,16 @@ class fixed_henon(object):
             t_list, self.mu, self.barrier, self.kick_module)
         return megno
 
+    def track_tangent_map(self, x, px, y, py, t_list):
+        engine = henon_tracker(x, px, y, py, self.force_CPU)
+        engine.compute_a_modulation(
+            self.max_t, self.omega_x, self.omega_y, self.epsilon,
+            self.modulation_kind, self.omega_0, offset=0
+        )
+        tm = engine.track_tangent_map(
+            t_list, self.mu, self.barrier, self.kick_module)
+        return tm
+
     def keep_tracking(self, t):
         assert(self.engine is not None)
         self.engine.track(t, self.mu, self.barrier, self.kick_module, False)
@@ -170,11 +180,24 @@ def henon_run(omega_x, omega_y, modulation_kind, epsilon, mu, kick_module, omega
 
         for i in range(len(henon_config["t_list"])):
             data[f"megno/{henon_config['t_list'][i]}"] = megno[i]
+    
+    elif tracking == "tangent_map":
+        # start chronometer
+        start = time.time()
+        tm = engine.track_tangent_map(
+            x_flat, px_flat, y_flat, py_flat, henon_config["t_list"])
+        # stop chronometer
+        end = time.time()
+        # print time in hh:mm:ss
+        print(f"Elapsed time: {datetime.timedelta(seconds=end-start)}")
+
+        for i in range(len(henon_config["t_list"])):
+            data[f"tangent_map/{henon_config['t_list'][i]}"] = tm[i]
 
     elif tracking == "birkhoff_tunes":
         # start chronometer
         start = time.time()
-
+        engine.force_CPU = True
         engine.create(x_flat, px_flat, y_flat, py_flat)
         from_idx = np.array(
             [0 for _ in henon_config["t_base_2"][:-1]] +
@@ -201,6 +224,7 @@ def henon_run(omega_x, omega_y, modulation_kind, epsilon, mu, kick_module, omega
     elif tracking == "fft_tunes":
         # start chronometer
         start = time.time()
+        engine.force_CPU = True
         engine.create(x_flat, px_flat, y_flat, py_flat)
         from_idx = np.array(
             [0 for _ in henon_config["t_base_2"][:-1]] +
