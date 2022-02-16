@@ -24,7 +24,7 @@ class fixed_henon(object):
         self.modulation_kind = modulation_kind
         self.omega_0 = omega_0
         self.max_t = max_t
-        self.force_CPU = force_CPU
+        self.force_CPU = True
 
         self.engine = None
 
@@ -57,6 +57,16 @@ class fixed_henon(object):
             t_list, self.mu, self.barrier, self.kick_module)
         return megno
 
+    def track_realignments(self, x, px, y, py, t_list, m_low, m_barrier):
+        engine = henon_tracker(x, px, y, py, self.force_CPU)
+        engine.compute_a_modulation(
+            self.max_t, self.omega_x, self.omega_y, self.epsilon,
+            self.modulation_kind, self.omega_0, offset=0
+        )
+        megno = engine.track_realignments(
+            t_list, self.mu, self.barrier, self.kick_module, m_low, m_barrier)
+        return megno
+
     def track_tangent_map(self, x, px, y, py, t_list):
         engine = henon_tracker(x, px, y, py, self.force_CPU)
         engine.compute_a_modulation(
@@ -86,15 +96,52 @@ def henon_run(omega_x, omega_y, modulation_kind, epsilon, mu, kick_module, omega
 
     # Load data
     print("Loading data...")
-    if tracking == "megno":
-        x_flat = np.concatenate(
-            (henon_config["x_flat"], henon_config["x_random_displacement"]))
-        px_flat = np.concatenate(
-            (henon_config["px_flat"], henon_config["px_random_displacement"]))
-        y_flat = np.concatenate(
-            (henon_config["y_flat"], henon_config["y_random_displacement"]))
-        py_flat = np.concatenate(
-            (henon_config["py_flat"], henon_config["py_random_displacement"]))
+    if tracking == "megno" or tracking == "true_displacement":
+        if displacement_kind == "random":
+            x_flat = np.concatenate(
+                (henon_config["x_flat"], henon_config["x_random_displacement"]))
+            px_flat = np.concatenate(
+                (henon_config["px_flat"], henon_config["px_random_displacement"]))
+            y_flat = np.concatenate(
+                (henon_config["y_flat"], henon_config["y_random_displacement"]))
+            py_flat = np.concatenate(
+                (henon_config["py_flat"], henon_config["py_random_displacement"]))
+        elif displacement_kind == "x":
+            x_flat = np.concatenate(
+                (henon_config["x_flat"], henon_config["x_displacement"]))
+            px_flat = np.concatenate(
+                (henon_config["px_flat"], henon_config["px_flat"]))
+            y_flat = np.concatenate(
+                (henon_config["y_flat"], henon_config["y_flat"]))
+            py_flat = np.concatenate(
+                (henon_config["py_flat"], henon_config["py_flat"]))
+        elif displacement_kind == "y":
+            x_flat = np.concatenate(
+                (henon_config["x_flat"], henon_config["x_flat"]))
+            px_flat = np.concatenate(
+                (henon_config["px_flat"], henon_config["px_flat"]))
+            y_flat = np.concatenate(
+                (henon_config["y_flat"], henon_config["y_displacement"]))
+            py_flat = np.concatenate(
+                (henon_config["py_flat"], henon_config["py_flat"]))
+        elif displacement_kind == "px":
+            x_flat = np.concatenate(
+                (henon_config["x_flat"], henon_config["x_flat"]))
+            px_flat = np.concatenate(
+                (henon_config["px_flat"], henon_config["px_displacement"]))
+            y_flat = np.concatenate(
+                (henon_config["y_flat"], henon_config["y_flat"]))
+            py_flat = np.concatenate(
+                (henon_config["py_flat"], henon_config["py_flat"]))
+        elif displacement_kind == "py":
+            x_flat = np.concatenate(
+                (henon_config["x_flat"], henon_config["x_flat"]))
+            px_flat = np.concatenate(
+                (henon_config["px_flat"], henon_config["px_flat"]))
+            y_flat = np.concatenate(
+                (henon_config["y_flat"], henon_config["y_flat"]))
+            py_flat = np.concatenate(
+                (henon_config["py_flat"], henon_config["py_displacement"]))
     else:
         x_flat = henon_config["x_flat"]
         px_flat = henon_config["px_flat"]
@@ -156,7 +203,6 @@ def henon_run(omega_x, omega_y, modulation_kind, epsilon, mu, kick_module, omega
             data[f"px/{t_sum}"] = px
             data[f"y/{t_sum}"] = y
             data[f"py/{t_sum}"] = py
-
     elif tracking == "track_and_reverse":
         print("Creating engine")
         engine.create(x_flat, px_flat, y_flat, py_flat)
@@ -180,6 +226,19 @@ def henon_run(omega_x, omega_y, modulation_kind, epsilon, mu, kick_module, omega
 
         for i in range(len(henon_config["t_list"])):
             data[f"megno/{henon_config['t_list'][i]}"] = megno[i]
+    
+    elif tracking == "true_displacement":
+        # start chronometer
+        start = time.time()
+        displacement = engine.track_realignments(
+            x_flat, px_flat, y_flat, py_flat, henon_config["t_list"], henon_config["displacement"], henon_config["displacement"]*1e3)
+        # stop chronometer
+        end = time.time()
+        # print time in hh:mm:ss
+        print(f"Elapsed time: {datetime.timedelta(seconds=end-start)}")
+
+        for i in range(len(henon_config["t_list"])):
+            data[f"displacement/{henon_config['t_list'][i]}"] = displacement[i]
     
     elif tracking == "tangent_map":
         # start chronometer

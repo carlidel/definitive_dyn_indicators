@@ -355,6 +355,16 @@ class data_manager(object):
         f.close()
         return data
 
+    def better_lyapunov(self, group, times=None):
+        times = self.get_times(times)
+        f = self.get_file_from_group(group, "random", "true_displacement")
+        data = {}
+        for t in tqdm(times):
+            data[t] = np.log10(f[f"displacement/{t}"][:]/self.henon_config["displacement"]) / t
+        data = pd.DataFrame(data=data)
+        f.close()
+        return data
+
     def tangent_map(self, group, times=None):
         times = self.get_times(times)
         f = self.get_file_from_group(group, "none", "tangent_map")
