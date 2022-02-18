@@ -182,11 +182,12 @@ def henon_run(omega_x, omega_y, modulation_kind, epsilon, mu, kick_module, omega
         x, px, y, py, steps = engine.track(
             x_flat, px_flat, y_flat, py_flat, henon_config["extreme_tracking"])
 
-        data["x"] = x
-        data["px"] = px
-        data["y"] = y
-        data["py"] = py
-        data["steps"] = steps
+        data.create_dataset("x", data=x, compression="gzip", shuffle=True)
+        data.create_dataset("px", data=px, compression="gzip", shuffle=True)
+        data.create_dataset("y", data=y, compression="gzip", shuffle=True)
+        data.create_dataset("py", data=py, compression="gzip", shuffle=True)
+        data.create_dataset("steps", data=steps, compression="gzip", shuffle=True)
+
         # stop chronometer
         end = time.time()
         # print time in hh:mm:ss
@@ -199,20 +200,22 @@ def henon_run(omega_x, omega_y, modulation_kind, epsilon, mu, kick_module, omega
             else:
                 x, px, y, py, steps = engine.keep_tracking(t)
 
-            data[f"x/{t_sum}"] = x
-            data[f"px/{t_sum}"] = px
-            data[f"y/{t_sum}"] = y
-            data[f"py/{t_sum}"] = py
+            data.create_dataset(f"x/{t_sum}", data=x, compression="gzip", shuffle=True)
+            data.create_dataset(f"px/{t_sum}", data=px, compression="gzip", shuffle=True)
+            data.create_dataset(f"y/{t_sum}", data=y, compression="gzip", shuffle=True)
+            data.create_dataset(f"py/{t_sum}", data=py, compression="gzip", shuffle=True)
+        
+        data.create_dataset("steps", data=steps, compression="gzip", shuffle=True)
     elif tracking == "track_and_reverse":
         print("Creating engine")
         engine.create(x_flat, px_flat, y_flat, py_flat)
         for i, (t, t_sum) in tqdm(enumerate(zip(henon_config["t_list"], henon_config["t_list"])), total=len(henon_config["t_list"])):
             x, px, y, py, steps = engine.track_and_reverse(t)
 
-            data[f"x/{t_sum}"] = x
-            data[f"px/{t_sum}"] = px
-            data[f"y/{t_sum}"] = y
-            data[f"py/{t_sum}"] = py
+            data.create_dataset(f"x/{t_sum}", data=x, compression="gzip", shuffle=True)
+            data.create_dataset(f"px/{t_sum}", data=px, compression="gzip", shuffle=True)
+            data.create_dataset(f"y/{t_sum}", data=y, compression="gzip", shuffle=True)
+            data.create_dataset(f"py/{t_sum}", data=py, compression="gzip", shuffle=True)
 
     elif tracking == "megno":
         # start chronometer
@@ -225,7 +228,7 @@ def henon_run(omega_x, omega_y, modulation_kind, epsilon, mu, kick_module, omega
         print(f"Elapsed time: {datetime.timedelta(seconds=end-start)}")
 
         for i in range(len(henon_config["t_list"])):
-            data[f"megno/{henon_config['t_list'][i]}"] = megno[i]
+            data.create_dataset(f"megno/{henon_config['t_list'][i]}", data=megno[i], compression="gzip", shuffle=True)
     
     elif tracking == "true_displacement":
         # start chronometer
@@ -238,8 +241,11 @@ def henon_run(omega_x, omega_y, modulation_kind, epsilon, mu, kick_module, omega
         print(f"Elapsed time: {datetime.timedelta(seconds=end-start)}")
 
         for i in range(len(henon_config["t_list"])):
-            data[f"displacement/{henon_config['t_list'][i]}"] = displacement[i]
-    
+            data.create_dataset(f"displacement/{henon_config['t_list'][i]}", data=displacement[i], compression="gzip", shuffle=True)
+
+        data.create_dataset("steps", data=engine.engine.get_steps(),
+                            compression="gzip", shuffle=True)
+
     elif tracking == "tangent_map":
         # start chronometer
         start = time.time()
@@ -251,7 +257,7 @@ def henon_run(omega_x, omega_y, modulation_kind, epsilon, mu, kick_module, omega
         print(f"Elapsed time: {datetime.timedelta(seconds=end-start)}")
 
         for i in range(len(henon_config["t_list"])):
-            data[f"tangent_map/{henon_config['t_list'][i]}"] = tm[i]
+            data.create_dataset(f"tangent_map/{henon_config['t_list'][i]}", data=tm[i], compression="gzip", shuffle=True)
 
     elif tracking == "birkhoff_tunes":
         # start chronometer
@@ -272,8 +278,8 @@ def henon_run(omega_x, omega_y, modulation_kind, epsilon, mu, kick_module, omega
             engine.kick_module, from_idx=from_idx, to_idx=to_idx
         )
         for i in range(len(tunes)):
-            data[f"tune_x/{tunes.iloc[i]['from']}/{tunes.iloc[i]['to']}"] = tunes.iloc[i]['tune_x']
-            data[f"tune_y/{tunes.iloc[i]['from']}/{tunes.iloc[i]['to']}"] = tunes.iloc[i]['tune_y']
+            data.create_dataset(f"tune_x/{tunes.iloc[i]['from']}/{tunes.iloc[i]['to']}", data=tunes.iloc[i]['tune_x'], compression="gzip", shuffle=True)
+            data.create_dataset(f"tune_y/{tunes.iloc[i]['from']}/{tunes.iloc[i]['to']}", data=tunes.iloc[i]['tune_y'], compression="gzip", shuffle=True)
 
         # stop chronometer
         end = time.time()
@@ -299,8 +305,8 @@ def henon_run(omega_x, omega_y, modulation_kind, epsilon, mu, kick_module, omega
             engine.kick_module, from_idx=from_idx, to_idx=to_idx
         )
         for i in range(len(tunes)):
-            data[f"tune_x/{tunes.iloc[i]['from']}/{tunes.iloc[i]['to']}"] = tunes.iloc[i]['tune_x']
-            data[f"tune_y/{tunes.iloc[i]['from']}/{tunes.iloc[i]['to']}"] = tunes.iloc[i]['tune_y']
+            data.create_dataset(f"tune_x/{tunes.iloc[i]['from']}/{tunes.iloc[i]['to']}", data=tunes.iloc[i]['tune_x'], compression="gzip", shuffle=True)
+            data.create_dataset(f"tune_y/{tunes.iloc[i]['from']}/{tunes.iloc[i]['to']}", data=tunes.iloc[i]['tune_y'], compression="gzip", shuffle=True)
         # stop chronometer
         end = time.time()
         # print time in hh:mm:ss
