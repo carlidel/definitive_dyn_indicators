@@ -24,7 +24,7 @@ class fixed_henon(object):
         self.modulation_kind = modulation_kind
         self.omega_0 = omega_0
         self.max_t = max_t
-        self.force_CPU = True
+        self.force_CPU = force_CPU
 
         self.engine = None
 
