@@ -15,7 +15,7 @@ if __name__ == '__main__':
     dm.henon_config["t_base"] = np.array([], dtype=int)
     
     dm.henon_config["t_base_10"] = np.logspace(3, 8, 16, base=10, dtype=int)
-    dm.henon_config["t_linear"] = np.linspace(100000, 100000000, 2000, dtype=int)
+    dm.henon_config["t_linear"] = np.linspace(100000, 100000000, 1999, dtype=int)
 
     dm.henon_config = refresh_henon_config(dm.henon_config)
 
