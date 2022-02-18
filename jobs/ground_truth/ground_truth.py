@@ -1,7 +1,7 @@
 import numpy as np
 import definitive_dyn_indicators as dd
 
-from definitive_dyn_indicators.scripts.data_manager import data_manager
+from definitive_dyn_indicators.scripts.data_manager import data_manager, refresh_henon_config
 
 if __name__ == '__main__':
     
@@ -17,7 +17,7 @@ if __name__ == '__main__':
     dm.henon_config["t_base_10"] = np.logspace(3, 8, 16, base=10, dtype=int)
     dm.henon_config["t_linear"] = np.linspace(100000, 100000000, 2000, dtype=int)
 
-    dm.henon_config = dd.refresh_henon_config(dm.henon_config)
+    dm.henon_config = refresh_henon_config(dm.henon_config)
 
     group = (
         0.168,                  # omega_x
