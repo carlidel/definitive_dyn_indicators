@@ -63,9 +63,9 @@ class fixed_henon(object):
             self.max_t, self.omega_x, self.omega_y, self.epsilon,
             self.modulation_kind, self.omega_0, offset=0
         )
-        megno = engine.track_realignments(
+        displacement = engine.track_realignments(
             t_list, self.mu, self.barrier, self.kick_module, m_low, m_barrier)
-        return megno
+        return displacement, engine.get_steps()
 
     def track_tangent_map(self, x, px, y, py, t_list):
         engine = henon_tracker(x, px, y, py, self.force_CPU)
@@ -233,7 +233,7 @@ def henon_run(omega_x, omega_y, modulation_kind, epsilon, mu, kick_module, omega
     elif tracking == "true_displacement":
         # start chronometer
         start = time.time()
-        displacement = engine.track_realignments(
+        displacement, steps = engine.track_realignments(
             x_flat, px_flat, y_flat, py_flat, henon_config["t_list"], henon_config["displacement"], henon_config["displacement"]*1e3)
         # stop chronometer
         end = time.time()
@@ -243,8 +243,7 @@ def henon_run(omega_x, omega_y, modulation_kind, epsilon, mu, kick_module, omega
         for i in range(len(henon_config["t_list"])):
             data.create_dataset(f"displacement/{henon_config['t_list'][i]}", data=displacement[i], compression="gzip", shuffle=True)
 
-        data.create_dataset("steps", data=engine.engine.get_steps(),
-                            compression="gzip", shuffle=True)
+        data.create_dataset("steps", data=steps, compression="gzip", shuffle=True)
 
     elif tracking == "tangent_map":
         # start chronometer
