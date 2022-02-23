@@ -194,12 +194,13 @@ class data_manager(object):
             else:
                 return np.array(to_return)
 
-    def get_file_from_group(self, group, displacement_kind, tracking):
+    def get_file_from_group(self, group, displacement_kind, tracking, writing=False):
         print(f"Getting file for group {group} with displacement {displacement_kind} and tracking {tracking}!")
         
         filename = self.get_filename(group[0], group[1], group[2], group[3], group[4], group[5], group[6], displacement_kind, tracking)
         if filename in self.file_list:
-            return h5py.File(os.path.join(self.DATA_DIR, filename), mode='r')
+            return h5py.File(os.path.join(self.DATA_DIR, filename), 
+                mode='r' if not writing else 'r+')
         
         print("Generating {} on the fly".format(group))
         hr.henon_run(
@@ -207,7 +208,7 @@ class data_manager(object):
             displacement_kind, tracking, self.DATA_DIR, self.henon_config
         )
         self.refresh_files()
-        return self.get_file_from_group(group, displacement_kind, tracking)
+        return self.get_file_from_group(group, displacement_kind, tracking, writing)
 
     def initial_radius(self):
         return np.sqrt(self.henon_config["x_flat"]**2 + self.henon_config["y_flat"]**2 + self.henon_config["px_flat"]**2 + self.henon_config["py_flat"]**2)
