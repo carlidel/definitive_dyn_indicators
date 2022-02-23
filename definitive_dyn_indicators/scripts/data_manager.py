@@ -251,24 +251,21 @@ class data_manager(object):
         return data
 
     def invariant_lyapunov_indicator(self, group, times=None):
-        f0 = self.get_file_from_group(group, "none", "step_track")
-        f1 = self.get_file_from_group(group, "x", "step_track")
-        f2 = self.get_file_from_group(group, "px", "step_track")
-        f3 = self.get_file_from_group(group, "y", "step_track")
-        f4 = self.get_file_from_group(group, "py", "step_track")
+        f1 = self.get_file_from_group(group, "x", "true_displacement")
+        f2 = self.get_file_from_group(group, "px", "true_displacement")
+        f3 = self.get_file_from_group(group, "y", "true_displacement")
+        f4 = self.get_file_from_group(group, "py", "true_displacement")
         times = self.get_times(times)
         data = {}
         for i, t in tqdm(enumerate(times), total=len(times)):
-            data[t] = di.invariant_lyapunov_error(
-                f0[f"x/{t}"][:], f0[f"px/{t}"][:], f0[f"y/{t}"][:], f0[f"py/{t}"][:],
-                f1[f"x/{t}"][:], f1[f"px/{t}"][:], f1[f"y/{t}"][:], f1[f"py/{t}"][:],
-                f2[f"x/{t}"][:], f2[f"px/{t}"][:], f2[f"y/{t}"][:], f2[f"py/{t}"][:],
-                f3[f"x/{t}"][:], f3[f"px/{t}"][:], f3[f"y/{t}"][:], f3[f"py/{t}"][:],
-                f4[f"x/{t}"][:], f4[f"px/{t}"][:], f4[f"y/{t}"][:], f4[f"py/{t}"][:],
+            data[t] = di.orthonormal_lyapunov_indicator(
+                f1[f"displacement/{t}"][:],
+                f2[f"displacement/{t}"][:],
+                f3[f"displacement/{t}"][:],
+                f4[f"displacement/{t}"][:],
                 self.henon_config["displacement"], t
             )
         data = pd.DataFrame(data=data)
-        f0.close()
         f1.close()
         f2.close()
         f3.close()
@@ -277,8 +274,8 @@ class data_manager(object):
     
     def smallest_alignment_index(self, group, times=None):
         f0 = self.get_file_from_group(group, "none", "step_track")
-        f1 = self.get_file_from_group(group, "x", "step_track")
-        f2 = self.get_file_from_group(group, "y", "step_track")
+        f1 = self.get_file_from_group(group, "x", "true_displacement")
+        f2 = self.get_file_from_group(group, "y", "true_displacement")
         times = self.get_times(times)
         data = {}
         for i, t in tqdm(enumerate(times), total=len(times)):
@@ -300,10 +297,10 @@ class data_manager(object):
 
     def global_alignment_index(self, group, times=None):
         f0 = self.get_file_from_group(group, "none", "step_track")
-        f1 = self.get_file_from_group(group, "x", "step_track")
-        f2 = self.get_file_from_group(group, "y", "step_track")
-        f3 = self.get_file_from_group(group, "px", "step_track")
-        f4 = self.get_file_from_group(group, "py", "step_track")
+        f1 = self.get_file_from_group(group, "x", "true_displacement")
+        f2 = self.get_file_from_group(group, "y", "true_displacement")
+        f3 = self.get_file_from_group(group, "px", "true_displacement")
+        f4 = self.get_file_from_group(group, "py", "true_displacement")
         times = self.get_times(times)
         data = {}
         for i, t in tqdm(enumerate(times), total=len(times)):

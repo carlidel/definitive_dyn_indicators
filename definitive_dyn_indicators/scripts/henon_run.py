@@ -233,7 +233,7 @@ def henon_run(omega_x, omega_y, modulation_kind, epsilon, mu, kick_module, omega
     elif tracking == "true_displacement":
         # start chronometer
         start = time.time()
-        displacement, steps = engine.track_realignments(
+        displacement, d_x, d_px, d_y, d_py, steps = engine.track_realignments(
             x_flat, px_flat, y_flat, py_flat, henon_config["t_list"], henon_config["displacement"], henon_config["displacement"]*1e3)
         # stop chronometer
         end = time.time()
@@ -242,6 +242,10 @@ def henon_run(omega_x, omega_y, modulation_kind, epsilon, mu, kick_module, omega
 
         for i in range(len(henon_config["t_list"])):
             data.create_dataset(f"displacement/{henon_config['t_list'][i]}", data=displacement[i], compression="gzip", shuffle=True)
+            data.create_dataset(f"x/{henon_config['t_list'][i]}", data=d_x[i], compression="gzip", shuffle=True)
+            data.create_dataset(f"px/{henon_config['t_list'][i]}", data=d_px[i], compression="gzip", shuffle=True)
+            data.create_dataset(f"y/{henon_config['t_list'][i]}", data=d_y[i], compression="gzip", shuffle=True)
+            data.create_dataset(f"py/{henon_config['t_list'][i]}", data=d_py[i], compression="gzip", shuffle=True)
 
         data.create_dataset("steps", data=steps, compression="gzip", shuffle=True)
 

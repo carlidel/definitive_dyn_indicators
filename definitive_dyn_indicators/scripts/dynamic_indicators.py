@@ -42,6 +42,10 @@ def invariant_lyapunov_error(x, px, y, py, x_1, px_1, y_1, py_1, x_2, px_2, y_2,
     return np.log(np.sqrt(trace) / mod_d) / t
 
 
+def orthonormal_lyapunov_indicator(d1, d2, d3, d4, mod_d, t):
+    return np.log10(np.sqrt(d1**2 + d2**2 + d3**2 + d4**2) / mod_d) / t
+
+
 def reversibility_error(x, px, y, py, x_rev, px_rev, y_rev, py_rev):
     """
     Reversibility Error
