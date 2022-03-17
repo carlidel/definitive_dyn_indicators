@@ -6,37 +6,40 @@ import os
 import pickle
 from tqdm import tqdm
 from numba import njit, prange
+from zmq import THREAD_SCHED_POLICY
 from . import dynamic_indicators as di
 from . import henon_run as hr
 import matplotlib.pyplot as plt
 import matplotlib
+import lmfit
+from sklearn.cluster import KMeans
+from sklearn.mixture import GaussianMixture
+from sklearn.neighbors import KernelDensity
+from scipy.signal import argrelextrema
+import joblib
+
 
 from numpy.random import MT19937
 from numpy.random import RandomState, SeedSequence
 
+N_THREADS = os.cpu_count()
 RANDOM_SEED = 42
 rs = RandomState(MT19937(SeedSequence(RANDOM_SEED)))
 
 def sample_4d_displacement_on_a_sphere():
-    n = rs.uniform(-1, 1, size=4)
-    while n[0]**2 + n[1]**2 > 1 or n[2]**2 + n[3]**2 > 1:
-        n = rs.uniform(-1, 1, size=4)
-    fix = (1 - n[0]**2 - n[1]**2) / (n[2]**2 - n[3]**2)
-    n[2] *= fix
-    n[3] *= fix
-    return n
+    n = rs.normal(0, 1, size=4)
+    module = np.sqrt(np.sum(n ** 2))
+    return n / module
 
 HENON_BASE_CONFIG = {
     'name': 'henon_square_universal_config',
     'samples': 100,
     'random_seed': RANDOM_SEED,
-    'displacement_scale': 1e-6,
+    'displacement_scale': 1e-10,
 
     'x_extents': [0.0, 0.8],
     'y_extents': [0.0, 0.8],
 
-    'low_tracking': 1000000,
-    'tracking': 10000000,
     'extreme_tracking': 100000000,
 
     't_base_10': np.logspace(1, 6, 51, dtype=int),
@@ -110,6 +113,137 @@ def refresh_henon_config(henon_config):
 # get path of this script
 SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
 
+@njit
+def fit_3(x, a, k, c):
+    return a / np.power(x, k) + c
+
+
+def residual_3_fit(params, x, y):
+    a = params["a"].value
+    k = params["k"].value
+    c = params["c"].value
+
+    model = fit_3(x, a, k, c)
+    y_clean = np.log10(y)
+    mask = ~np.isnan(y_clean)
+    return np.log10(model[mask]) - y_clean[mask]
+
+
+def clean_data(x, y):
+    x = x[~np.logical_or(np.logical_or(np.isnan(y), np.isinf(y)), y == 0)]
+    y = y[~np.logical_or(np.logical_or(np.isnan(y), np.isinf(y)), y == 0)]
+    return x, y
+
+
+def fit(x, y, valid=True, kind="fit_fix_k", extra_log=False):
+    # print(i)
+    try:
+        if extra_log:
+            y = np.log10(y)
+        
+        x, y = clean_data(x, y)
+        y = np.absolute(y)
+        
+        if len(x[x > 100]) < 2 or not valid:
+            return "discarded"
+
+        params = lmfit.Parameters()
+        if kind == "fit_3":
+            params.add("a", value=1, min=0)
+            params.add("k", value=1)
+            params.add("c", value=0)
+            result = lmfit.minimize(
+                residual_3_fit, params, args=(x, y))
+        elif kind == "fit_fix_k":
+            params.add("a", value=1, min=0)
+            params.add("k", value=1, vary=False)
+            params.add("c", value=0)
+            result = lmfit.minimize(
+                residual_3_fit, params, args=(x, y))
+        elif kind == "fit_fix_a":
+            params.add("a", value=1, vary=False)
+            params.add("k", value=1)
+            params.add("c", value=0)
+            result = lmfit.minimize(
+                residual_3_fit, params, args=(x, y))
+        elif kind == "fit_fix_c":
+            params.add("a", value=1, min=0)
+            params.add("k", value=1)
+            params.add("c", value=0, vary=False)
+            result = lmfit.minimize(
+                residual_3_fit, params, args=(x, y))
+        else:
+            raise ValueError(f"kind {kind} not recognized")
+        return result
+    except ValueError:
+        # print(e)
+        return "error"
+
+
+def reject_outliers(data, m=10):
+    return data[abs(data - np.mean(data)) < m * np.std(data)]
+
+
+def clustering_2_points(data, clustering_method="GaussianMixtrue", multiplier=30, ret_dx=False, basic=False):
+    _, data = clean_data(np.ones_like(data), data)
+    data = reject_outliers(data)
+    if clustering_method == "GaussianMixtrue":
+        labels = GaussianMixture(2).fit_predict(data.reshape(-1, 1))
+    elif clustering_method == "KMeans":
+        labels = KMeans(n_clusters=2).fit_predict(data.reshape(-1, 1))
+    else:
+        raise ValueError(f"clustering method {clustering_method} not recognized")
+    max_1 = np.max(data[labels == 0])
+    max_2 = np.max(data[labels == 1])
+    min_1 = np.min(data[labels == 0])
+    min_2 = np.min(data[labels == 1])
+    if max_1 > max_2:
+        thresh = (max_2 + min_1) / 2
+    else:
+        thresh = (max_1 + min_2) / 2
+    
+    if basic:
+        return thresh
+
+    X_max = np.max(data)
+    X_min = np.min(data)
+    X_samples, dX = np.linspace(X_min, X_max, 1000, retstep=True)
+
+    data = data.reshape(-1, 1)
+    kde = KernelDensity(kernel='gaussian', bandwidth=dX*multiplier).fit(data)
+
+    def to_minimize(x):
+        x = np.asarray(x).flatten()
+        return np.exp(kde.score_samples(x.reshape(-1, 1)))
+
+    values = to_minimize(X_samples)
+    local_minima = X_samples[argrelextrema(values, np.less)]
+    local_maxima = X_samples[argrelextrema(values, np.greater)]
+
+    local_minima_left = local_minima[(local_minima - thresh) < 0]
+    local_minima_right = local_minima[(local_minima - thresh) >= 0]
+    local_maxima_left = local_maxima[(local_maxima - thresh) < 0]
+    local_maxima_right = local_maxima[(local_maxima - thresh) >= 0]
+
+    try:
+        if len(local_minima_left) == 0 or len(local_minima_right) == 0:
+            new_thresh = thresh
+        else:
+            if len(local_minima_left) == 0:
+                new_thresh = local_minima_right[0]
+            elif len(local_minima_right) == 0:
+                new_thresh = local_minima_left[-1]
+            else:
+                if local_minima_left[-1] < local_maxima_left[-1]:
+                    new_thresh = local_minima_right[0]
+                else:
+                    new_thresh = local_minima_left[-1]
+    except Exception:
+        new_thresh = thresh
+    if not ret_dx:
+        return new_thresh
+    else:
+        return new_thresh, dX * multiplier
 
 class data_manager(object):
     DATA_DIR = os.path.join(SCRIPT_DIR, "../../data/")
@@ -204,8 +338,8 @@ class data_manager(object):
         
         print("Generating {} on the fly".format(group))
         hr.henon_run(
-            group[0], group[1], group[2], group[3], group[4], group[5], group[6],
-            displacement_kind, tracking, self.DATA_DIR, self.henon_config
+            omega_x=group[0], omega_y=group[1], modulation_kind=group[2], epsilon=group[3], mu=group[4], kick_module=group[5], omega_0=group[6],
+            displacement_kind=displacement_kind, tracking=tracking, outdir=self.DATA_DIR, **self.henon_config
         )
         self.refresh_files()
         return self.get_file_from_group(group, displacement_kind, tracking, writing)
@@ -219,109 +353,57 @@ class data_manager(object):
         f.close()
         return data
 
-    def raw_displacement(self, group, displacement="random", times=None):
-        f0 = self.get_file_from_group(group, "none", "step_track")
-        f1 = self.get_file_from_group(group, displacement, "step_track")
+    def fast_lyapunov_indicator(self, group, times=None):
+        f0 = self.get_file_from_group(group, "none", "lyapunov")
         times = self.get_times(times)
         data = {}
         for t in tqdm(times):
-            data[t] = di.raw_displacement(
-                f0[f"x/{t}"][:], f0[f"px/{t}"][:], f0[f"y/{t}"][:], f0[f"py/{t}"][:],
-                f1[f"x/{t}"][:], f1[f"px/{t}"][:], f1[f"y/{t}"][:], f1[f"py/{t}"][:],
-            )
+            data[t] = f0[f"lyapunov/{t}"][:] 
         data = pd.DataFrame(data=data)
         f0.close()
-        f1.close()
         return data
 
-    def fast_lyapunov_indicator(self, group, displacement="random", times=None):
-        f0 = self.get_file_from_group(group, "none", "step_track")
-        f1 = self.get_file_from_group(group, displacement, "step_track")
+    def birkhoff_lyapunov_indicator(self, group, times=None):
+        f0 = self.get_file_from_group(group, "none", "lyapunov_birkhoff")
         times = self.get_times(times)
         data = {}
         for t in tqdm(times):
-            data[t] = di.fast_lyapunov_indicator(
-                f0[f"x/{t}"][:], f0[f"px/{t}"][:], f0[f"y/{t}"][:], f0[f"py/{t}"][:],
-                f1[f"x/{t}"][:], f1[f"px/{t}"][:], f1[f"y/{t}"][:], f1[f"py/{t}"][:],
-                self.henon_config["displacement"], t
-            )
+            data[t] = f0[f"lyapunov/{t}"][:] 
         data = pd.DataFrame(data=data)
         f0.close()
-        f1.close()
         return data
 
-    def invariant_lyapunov_indicator(self, group, times=None):
-        f1 = self.get_file_from_group(group, "x", "true_displacement")
-        f2 = self.get_file_from_group(group, "px", "true_displacement")
-        f3 = self.get_file_from_group(group, "y", "true_displacement")
-        f4 = self.get_file_from_group(group, "py", "true_displacement")
+    def orthogonal_lyapunov_indicator(self, group, times=None):
+        f = self.get_file_from_group(group, "none", "orthogonal_lyapunov")
         times = self.get_times(times)
-        data = {}
+        data_max = {}
+        data_avg = {}
         for i, t in tqdm(enumerate(times), total=len(times)):
-            data[t] = di.orthonormal_lyapunov_indicator(
-                f1[f"displacement/{t}"][:],
-                f2[f"displacement/{t}"][:],
-                f3[f"displacement/{t}"][:],
-                f4[f"displacement/{t}"][:],
-                self.henon_config["displacement"], t
-            )
-        data = pd.DataFrame(data=data)
-        f1.close()
-        f2.close()
-        f3.close()
-        f4.close()
-        return data
+            data_max[t] = np.max(f[f"lyapunov/{t}"][:], axis=1)
+            data_avg[t] = np.mean(f[f"lyapunov/{t}"][:], axis=1)
+        data_max = pd.DataFrame(data=data_max)
+        data_avg = pd.DataFrame(data=data_avg)
+        f.close()
+        return data_max, data_avg
     
     def smallest_alignment_index(self, group, times=None):
-        f0 = self.get_file_from_group(group, "none", "step_track")
-        f1 = self.get_file_from_group(group, "x", "true_displacement")
-        f2 = self.get_file_from_group(group, "y", "true_displacement")
+        f0 = self.get_file_from_group(group, "none", "sali")
         times = self.get_times(times)
         data = {}
         for i, t in tqdm(enumerate(times), total=len(times)):
-            data[t] = di.smallest_alignment_index(
-                f0[f"x/{t}"][:], f0[f"px/{t}"][:], f0[f"y/{t}"][:], f0[f"py/{t}"][:],
-                f1[f"x/{t}"][:], f1[f"px/{t}"][:], f1[f"y/{t}"][:], f1[f"py/{t}"][:],
-                f2[f"x/{t}"][:], f2[f"px/{t}"][:], f2[f"y/{t}"][:], f2[f"py/{t}"][:]
-            )
-            if i > 0:
-                data[t] = np.min(
-                    [data[t], data[times[i-1]]],
-                    axis=0
-                )
+            data[t] = f0[f"sali/{t}"][:]
         data = pd.DataFrame(data=data)
         f0.close()
-        f1.close()
-        f2.close()
         return data
 
     def global_alignment_index(self, group, times=None):
-        f0 = self.get_file_from_group(group, "none", "step_track")
-        f1 = self.get_file_from_group(group, "x", "true_displacement")
-        f2 = self.get_file_from_group(group, "y", "true_displacement")
-        f3 = self.get_file_from_group(group, "px", "true_displacement")
-        f4 = self.get_file_from_group(group, "py", "true_displacement")
+        f0 = self.get_file_from_group(group, "none", "gali")
         times = self.get_times(times)
         data = {}
         for i, t in tqdm(enumerate(times), total=len(times)):
-            data[t] = di.global_alignment_index(
-                f0[f"x/{t}"][:], f0[f"px/{t}"][:], f0[f"y/{t}"][:], f0[f"py/{t}"][:],
-                f1[f"x/{t}"][:], f1[f"px/{t}"][:], f1[f"y/{t}"][:], f1[f"py/{t}"][:],
-                f2[f"x/{t}"][:], f2[f"px/{t}"][:], f2[f"y/{t}"][:], f2[f"py/{t}"][:],
-                f3[f"x/{t}"][:], f3[f"px/{t}"][:], f3[f"y/{t}"][:], f3[f"py/{t}"][:],
-                f4[f"x/{t}"][:], f4[f"px/{t}"][:], f4[f"y/{t}"][:], f4[f"py/{t}"][:]
-            )
-            if i > 0:
-                data[t] = np.min(
-                    [data[t], data[times[i-1]]],
-                    axis=0
-                )
+            data[t] = f0[f"gali/{t}"][:] 
         data = pd.DataFrame(data=data)
         f0.close()
-        f1.close()
-        f2.close()
-        f3.close()
-        f4.close()
         return data
 
     def reversibility_error(self, group, times=None):
@@ -353,16 +435,39 @@ class data_manager(object):
         f.close()
         return data
 
-    def better_lyapunov(self, group, times=None):
+    def get_ground_truth(self, group, times=None, recompute=False):
         times = self.get_times(times)
-        f = self.get_file_from_group(group, "random", "true_displacement")
-        data = {}
-        for t in tqdm(times):
-            data[t] = np.log10(f[f"displacement/{t}"][:]/self.henon_config["displacement"]) / t
-        data = pd.DataFrame(data=data)
+        f = self.get_file_from_group(group, "none", "lyapunov")
+        # check if the dataset "ground_truth" is available
+        if "ground_truth" in f.keys() and not recompute:
+            data = f["ground_truth"][:]
+            f.close()
+            return data
+        
         f.close()
-        return data
+        f = self.get_file_from_group(group, "none", "lyapunov", writing=True) 
 
+        print("Computing and saving ground truth")
+        stability = f["steps"][:]
+        stability = stability[:len(stability) // 2]
+        
+        lyapunov = self.fast_lyapunov_indicator(group, times)
+        lyapunov = lyapunov[max(times)].to_numpy()
+
+        threshold = clustering_2_points(np.log10(lyapunov))
+        print("Saving ground truth")
+        mask = np.asarray(stability==np.nanmax(stability), dtype=int)
+        mask[stability <= 100] = -1
+        mask[np.logical_and(
+            np.log10(lyapunov) > threshold,
+            np.logical_and(stability == np.nanmax(stability),
+                           np.log10(lyapunov) < 0.7)
+            )] = 2
+        mask_df = f.require_dataset("ground_truth", shape=mask.shape, dtype=int, compression="gzip", shuffle=True)
+        mask_df[:] = mask
+        f.close()
+        return mask
+       
     def tangent_map(self, group, times=None):
         times = self.get_times(times)
         f = self.get_file_from_group(group, "none", "tangent_map")
@@ -452,28 +557,90 @@ def apply_convolution_to_dataset(df, kernel_size, shape=(1000, 1000)):
     return df_mean, df_std
 
 
-def classify_with_data(stab_data, dyn_data, stab_thresh, dyn_thresh, stable_if_higher=False):
+def classify_with_data(stab_data, dyn_data, dyn_thresh, stable_if_higher=False, naive_data=None, naive_thresh_min=100, naive_thresh_max=1000):
     bool_mask = np.logical_not(np.logical_or(
         np.isnan(stab_data), np.isnan(dyn_data)))
     stab_data = stab_data[bool_mask]
     dyn_data = dyn_data[bool_mask]
-    data = stab_data >= stab_thresh
-    guess = (dyn_data >= dyn_thresh) if stable_if_higher else (
-        dyn_data <= dyn_thresh)
-    
-    total = data.size
+    data = stab_data  # >= stab_thresh
+    guess = (dyn_data >= dyn_thresh) if stable_if_higher else (dyn_data <= dyn_thresh)
+
+    if naive_data is None:
+        naive_quota = 0
+    else:
+        naive_quota = np.count_nonzero((naive_data >= naive_thresh_min) & (naive_data <= naive_thresh_max))
+
+    total = data.size + naive_quota
     tp = np.count_nonzero(data & guess)
     fp = np.count_nonzero(data & ~guess)
     fn = np.count_nonzero(~data & guess)
-    tn = np.count_nonzero(~data & ~guess)
+    tn = np.count_nonzero(~data & ~guess) + naive_quota
 
     accuracy = (tp + tn) / total
-    precision = tp / (tp + fp)
-    recall = tp / (tp + fn)
+    precision = tp / (tp + fp) if tp + fp > 0 else np.nan
+    recall = tp / (tp + fn) if tp + fn > 0 else np.nan
 
     return dict(
         tp=tp, fp=fp, fn=fn, tn=tn, total=total, accuracy=accuracy,
-        precision=precision, recall=recall
+        precision=precision, recall=recall, naive_quota=naive_quota
+    )
+
+
+def get_full_comparison(to_compare, bool_data, stable_if_higher, naive_data=None, naive_thresh_min=100, naive_thresh_max=1000):
+    mask = np.logical_and(~np.isinf(to_compare), ~np.isnan(to_compare))
+    to_compare = to_compare[mask]
+    bool_data = bool_data[mask]
+    data_range = (np.nanmin(to_compare), np.nanmax(to_compare))
+    median = np.nanmedian(to_compare)
+    mean = np.nanmean(to_compare)
+    threshold = clustering_2_points(to_compare)
+    samples = np.linspace(data_range[0], data_range[1], 1000, dtype=float)
+
+    confusion = []
+    for s in samples:
+        confusion.append(
+            classify_with_data(
+                bool_data,
+                to_compare, s,
+                stable_if_higher=stable_if_higher,
+                naive_data=naive_data,
+                naive_thresh_min=naive_thresh_min,
+                naive_thresh_max=naive_thresh_max
+            ))
+    accuracy_all = np.array([c['accuracy'] for c in confusion])
+    accuracy_best = np.nanmax(accuracy_all)
+    accuracy_best_val = samples[np.argmax(accuracy_all)]
+    accuracy_median = classify_with_data(
+        bool_data,
+        to_compare, median,
+        stable_if_higher=stable_if_higher,
+        naive_data=naive_data,
+        naive_thresh_min=naive_thresh_min,
+        naive_thresh_max=naive_thresh_max
+    )["accuracy"]
+    accuracy_mean = classify_with_data(
+        bool_data,
+        to_compare, mean,
+        stable_if_higher=stable_if_higher,
+        naive_data=naive_data,
+        naive_thresh_min=naive_thresh_min,
+        naive_thresh_max=naive_thresh_max
+    )["accuracy"]
+    accuracy_threshold = classify_with_data(
+        bool_data,
+        to_compare, threshold,
+        stable_if_higher=stable_if_higher,
+        naive_data=naive_data,
+        naive_thresh_min=naive_thresh_min,
+        naive_thresh_max=naive_thresh_max
+    )["accuracy"]
+
+    return dict(
+        median=median, mean=mean, threshold=threshold,
+        accuracy_all=accuracy_all, accuracy_median=accuracy_median,
+        accuracy_mean=accuracy_mean, accuracy_threshold=accuracy_threshold,
+        confusion=confusion, accuracy_best=accuracy_best,
+        accuracy_best_val=accuracy_best_val
     )
 
 
@@ -503,3 +670,4 @@ def apply_downsample_to_dataset(df, step=10, initial_shape=(1000, 1000)):
         df_downsampled[col] = downsample(df[col].to_numpy(), step, initial_shape)
     df_downsampled = pd.DataFrame(data=df_downsampled)
     return df_downsampled
+
