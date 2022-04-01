@@ -184,7 +184,7 @@ def reject_outliers(data, m=10):
     return data[abs(data - np.mean(data)) < m * np.std(data)]
 
 
-def clustering_2_points(data, clustering_method="GaussianMixtrue", multiplier=30, ret_dx=False, basic=False):
+def clustering_2_points(data, clustering_method="KMeans", multiplier=30, ret_dx=False, basic=False):
     _, data = clean_data(np.ones_like(data), data)
     data = reject_outliers(data)
     if clustering_method == "GaussianMixtrue":
@@ -291,9 +291,10 @@ class data_manager(object):
             d["filename"] = filename
             self.d_list.append(d)
 
-    def __init__(self, data_dir=None):
+    def __init__(self, data_dir=None, create_files=True):
         if data_dir is not None:
             self.DATA_DIR = data_dir
+            self.create_files = create_files
         
         self.henon_config = refresh_henon_config(HENON_BASE_CONFIG)
         self.refresh_files()
@@ -336,6 +337,9 @@ class data_manager(object):
             return h5py.File(os.path.join(self.DATA_DIR, filename), 
                 mode='r' if not writing else 'r+')
         
+        if not self.create_files:
+            raise Exception("No file found and we are not allowed to create files!")
+
         print("Generating {} on the fly".format(group))
         hr.henon_run(
             omega_x=group[0], omega_y=group[1], modulation_kind=group[2], epsilon=group[3], mu=group[4], kick_module=group[5], omega_0=group[6],
@@ -579,10 +583,11 @@ def classify_with_data(stab_data, dyn_data, dyn_thresh, stable_if_higher=False, 
     accuracy = (tp + tn) / total
     precision = tp / (tp + fp) if tp + fp > 0 else np.nan
     recall = tp / (tp + fn) if tp + fn > 0 else np.nan
+    f1 = 2 * precision * recall / (precision + recall) if precision + recall > 0 else np.nan
 
     return dict(
         tp=tp, fp=fp, fn=fn, tn=tn, total=total, accuracy=accuracy,
-        precision=precision, recall=recall, naive_quota=naive_quota
+        precision=precision, recall=recall, f1=f1, naive_quota=naive_quota
     )
 
 
@@ -591,10 +596,12 @@ def get_full_comparison(to_compare, bool_data, stable_if_higher, naive_data=None
     to_compare = to_compare[mask]
     bool_data = bool_data[mask]
     data_range = (np.nanmin(to_compare), np.nanmax(to_compare))
-    median = np.nanmedian(to_compare)
-    mean = np.nanmean(to_compare)
-    threshold = clustering_2_points(to_compare)
-    samples = np.linspace(data_range[0], data_range[1], 1000, dtype=float)
+    try:
+        threshold = clustering_2_points(to_compare, clustering_method="KMeans", basic=True)
+    except Exception:
+        threshold = np.nanmedian(to_compare)
+        
+    samples = np.linspace(data_range[0], data_range[1], 100, dtype=float)
 
     confusion = []
     for s in samples:
@@ -607,40 +614,37 @@ def get_full_comparison(to_compare, bool_data, stable_if_higher, naive_data=None
                 naive_thresh_min=naive_thresh_min,
                 naive_thresh_max=naive_thresh_max
             ))
+
     accuracy_all = np.array([c['accuracy'] for c in confusion])
     accuracy_best = np.nanmax(accuracy_all)
     accuracy_best_val = samples[np.argmax(accuracy_all)]
-    accuracy_median = classify_with_data(
-        bool_data,
-        to_compare, median,
-        stable_if_higher=stable_if_higher,
-        naive_data=naive_data,
-        naive_thresh_min=naive_thresh_min,
-        naive_thresh_max=naive_thresh_max
-    )["accuracy"]
-    accuracy_mean = classify_with_data(
-        bool_data,
-        to_compare, mean,
-        stable_if_higher=stable_if_higher,
-        naive_data=naive_data,
-        naive_thresh_min=naive_thresh_min,
-        naive_thresh_max=naive_thresh_max
-    )["accuracy"]
-    accuracy_threshold = classify_with_data(
+    
+    f1_all = np.array([c['f1'] for c in confusion])
+    f1_best = np.nanmax(f1_all)
+    f1_best_val = samples[np.argmax(f1_all)]
+
+    f1_best_accuracy = accuracy_all[np.argmax(f1_all)]
+    accuracy_best_f1 = f1_all[np.argmax(accuracy_all)]
+
+    confusion_threshold = classify_with_data(
         bool_data,
         to_compare, threshold,
         stable_if_higher=stable_if_higher,
         naive_data=naive_data,
         naive_thresh_min=naive_thresh_min,
         naive_thresh_max=naive_thresh_max
-    )["accuracy"]
+    )
+
+    accuracy_threshold = confusion_threshold["accuracy"]
+    f1_threshold = confusion_threshold["f1"]
 
     return dict(
-        median=median, mean=mean, threshold=threshold,
-        accuracy_all=accuracy_all, accuracy_median=accuracy_median,
-        accuracy_mean=accuracy_mean, accuracy_threshold=accuracy_threshold,
-        confusion=confusion, accuracy_best=accuracy_best,
-        accuracy_best_val=accuracy_best_val
+        confusion=confusion, threshold=threshold,
+        accuracy_all=accuracy_all, f1_all=f1_all,
+        accuracy_threshold=accuracy_threshold, f1_threshold=f1_threshold,
+        accuracy_best=accuracy_best, accuracy_best_val=accuracy_best_val,
+        f1_best=f1_best, f1_best_val=f1_best_val,
+        f1_best_accuracy=f1_best_accuracy, accuracy_best_f1=accuracy_best_f1
     )
 
 

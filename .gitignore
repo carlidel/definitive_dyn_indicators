@@ -5,6 +5,8 @@ figures/
 *.out
 *.err
 *.log
+*.hdf5
+*.jpg
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

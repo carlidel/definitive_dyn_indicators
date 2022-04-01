@@ -225,6 +225,7 @@ def henon_run(
             dir[0,:,0], dir[1,:,0], dir[2,:,0], dir[3,:,0],
             dir[0,:,1], dir[1,:,1], dir[2,:,1], dir[3,:,1],
         )
+        print("Dir shape:", dir.shape)
 
         event_list = [
             ["sample", t] for t in t_list
@@ -249,13 +250,18 @@ def henon_run(
                 particles.renormalize(disp_module)
                 current_t = time
 
-            dir = particles.get_displacement_direction()
-            sali = np.min([sali, smallest_alignment_index(
-                dir[0,:,0], dir[1,:,0], dir[2,:,0], dir[3,:,0],
-                dir[0,:,1], dir[1,:,1], dir[2,:,1], dir[3,:,1],
-            )], axis=0)
+            # dir = particles.get_displacement_direction()
+            # sali = np.min([sali, smallest_alignment_index(
+            #     dir[0,:,0], dir[1,:,0], dir[2,:,0], dir[3,:,0],
+            #     dir[0,:,1], dir[1,:,1], dir[2,:,1], dir[3,:,1],
+            # )], axis=0)
 
             if kind == "sample":
+                dir = particles.get_displacement_direction()
+                sali = smallest_alignment_index(
+                    dir[0,:,0], dir[1,:,0], dir[2,:,0], dir[3,:,0],
+                    dir[0,:,1], dir[1,:,1], dir[2,:,1], dir[3,:,1],
+                )
                 data.create_dataset(
                     f"sali/{time}", data=sali, compression="gzip", shuffle=True)
 
@@ -272,6 +278,7 @@ def henon_run(
             dir[0,:,2], dir[1,:,2], dir[2,:,2], dir[3,:,2],
             dir[0,:,3], dir[1,:,3], dir[2,:,3], dir[3,:,3],
         )
+        print("Dir shape:", dir.shape)
 
         event_list = [
             ["sample", t] for t in t_list
@@ -296,15 +303,22 @@ def henon_run(
                 particles.renormalize(disp_module)
                 current_t = time
 
-            dir = particles.get_displacement_direction()
-            gali = np.min([gali, global_alignment_index(
-                dir[0,:,0], dir[1,:,0], dir[2,:,0], dir[3,:,0],
-                dir[0,:,1], dir[1,:,1], dir[2,:,1], dir[3,:,1],
-                dir[0,:,2], dir[1,:,2], dir[2,:,2], dir[3,:,2],
-                dir[0,:,3], dir[1,:,3], dir[2,:,3], dir[3,:,3],
-            )], axis=0)
+            # dir = particles.get_displacement_direction()
+            # gali = np.min([gali, global_alignment_index(
+            #     dir[0,:,0], dir[1,:,0], dir[2,:,0], dir[3,:,0],
+            #     dir[0,:,1], dir[1,:,1], dir[2,:,1], dir[3,:,1],
+            #     dir[0,:,2], dir[1,:,2], dir[2,:,2], dir[3,:,2],
+            #     dir[0,:,3], dir[1,:,3], dir[2,:,3], dir[3,:,3],
+            # )], axis=0)
 
             if kind == "sample":
+                dir = particles.get_displacement_direction()
+                gali = global_alignment_index(
+                    dir[0,:,0], dir[1,:,0], dir[2,:,0], dir[3,:,0],
+                    dir[0,:,1], dir[1,:,1], dir[2,:,1], dir[3,:,1],
+                    dir[0,:,2], dir[1,:,2], dir[2,:,2], dir[3,:,2],
+                    dir[0,:,3], dir[1,:,3], dir[2,:,3], dir[3,:,3],
+                )
                 data.create_dataset(
                     f"gali/{time}", data=gali, compression="gzip", shuffle=True)
 
