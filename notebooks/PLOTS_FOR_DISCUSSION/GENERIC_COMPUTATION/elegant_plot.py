@@ -525,10 +525,11 @@ for (OMEGA_X, OMEGA_Y, X_EXTENTS, Y_EXTENTS), epsilon, mu, kernel in tqdm(list(i
     f1_chosen_list = [f1_chosen_gali, f1_chosen_sali, f1_chosen_reverse, f1_chosen_lyap, f1_chosen_olyap_max, f1_chosen_olyap_avg]
     ac_best_list = [ac_best_gali, ac_best_sali, ac_best_reverse, ac_best_lyap, ac_best_olyap_max, ac_best_olyap_avg]
     label_list = ["GALI", "SALI", "Reverse", "FLI", "OFLI max", "OFLI avg"]
+    filename_list = ["gali", "sali", "rem", "fli", "ofli_max", "ofli_avg"]
     color_list = ["C0", "C1", "C2", "C3", "C4", "C5"]
 
     for zoom in ZOOM_LEVELS:
-        for ac_chosen, f1_chosen, ac_best, label, color in zip(ac_chosen_list, f1_chosen_list, ac_best_list, label_list, color_list):
+        for ac_chosen, f1_chosen, ac_best, label, filename, color in zip(ac_chosen_list, f1_chosen_list, ac_best_list, label_list, filename_list, color_list):
             fig, ax = plt.subplots(1, 1)
 
             ax.plot(times_minor, ac_chosen, label="Accuracy a priori", c=color)
@@ -544,7 +545,7 @@ for (OMEGA_X, OMEGA_Y, X_EXTENTS, Y_EXTENTS), epsilon, mu, kernel in tqdm(list(i
             ax.set_ylabel("Accuracy / F1 value")
 
             plt.tight_layout()
-            plt.savefig(os.path.join(FIGPATH, "performance_" + label + f"_z_{zoom}.jpg"), dpi=300)
+            plt.savefig(os.path.join(FIGPATH, "performance_" + filename + f"_z_{zoom}.jpg"), dpi=300)
 
 
         fig, ax = plt.subplots(1, 1)
@@ -710,7 +711,7 @@ for (OMEGA_X, OMEGA_Y, X_EXTENTS, Y_EXTENTS), epsilon, mu, kernel in tqdm(list(i
                 location="left", label="Frequency $[\\log_{10}]$", aspect=20)
     plt.tight_layout()
 
-    plt.savefig(os.path.join(FIGPATH, "ground_truth_hist.jpg"), dpi=300)
+    plt.savefig(os.path.join(FIGPATH, "ground_truth_histogram.jpg"), dpi=300)
 
     # %% [markdown]
     # # TUNE PLOT
@@ -874,7 +875,7 @@ for (OMEGA_X, OMEGA_Y, X_EXTENTS, Y_EXTENTS), epsilon, mu, kernel in tqdm(list(i
                     location="left", label="Frequency $[\\log_{10}]$", aspect=20)
     plt.tight_layout()
 
-    plt.savefig(os.path.join(FIGPATH, "tune" + ".jpg"), dpi=300)
+    plt.savefig(os.path.join(FIGPATH, "tune_histogram" + ".jpg"), dpi=300)
 
     # %% [markdown]
     # # THE PLOT
@@ -884,13 +885,14 @@ for (OMEGA_X, OMEGA_Y, X_EXTENTS, Y_EXTENTS), epsilon, mu, kernel in tqdm(list(i
     
     DATA_LIST = [lyapunov, gali, sali, ortho_lyap_avg, ortho_lyap_max, reverse]
     TITLE_LIST = ["Lyapunov", "GALI", "SALI", "Ortho Lyapunov avg", "Ortho Lyapunov max", "Reverse"]
+    FILENAME_LIST = ["fli", "gali", "sali", "ofli_avg", "ofli_max", "rem"]
     LABEL_LIST = ["$\\log_{10}(FLI)$", "$\\log_{10}(GALI)$", "$\\log_{10}(SALI)$", "$\\log_{10}(OFLI avg)$", "$\\log_{10}(OFLI max)$", "$\\log_{10}(REM)$"]
 
     TH_BEST_LIST = [th_best_lyap, th_best_gali, th_best_sali, th_best_olyap_avg, th_best_olyap_max, th_best_reverse]
     TH_CHOSEN_LIST = [th_chosen_lyap, th_chosen_gali, th_chosen_sali, th_chosen_olyap_avg, th_chosen_olyap_max, th_chosen_reverse]
     TH_F1_BEST_LIST = [th_bestf1_lyap, th_bestf1_gali, th_bestf1_sali, th_bestf1_olyap_avg, th_bestf1_olyap_max, th_bestf1_reverse]
 
-    for DATA, TITLE, LABEL, TH_BEST, TH_CHOSEN, TH_F1 in tqdm(zip(DATA_LIST, TITLE_LIST, LABEL_LIST, TH_BEST_LIST, TH_CHOSEN_LIST, TH_F1_BEST_LIST)):
+    for DATA, TITLE, FILENAME, LABEL, TH_BEST, TH_CHOSEN, TH_F1 in tqdm(zip(DATA_LIST, TITLE_LIST, FILENAME_LIST, LABEL_LIST, TH_BEST_LIST, TH_CHOSEN_LIST, TH_F1_BEST_LIST)):
         print(TITLE)
         # %%
         picked_times = [
@@ -1052,7 +1054,7 @@ for (OMEGA_X, OMEGA_Y, X_EXTENTS, Y_EXTENTS), epsilon, mu, kernel in tqdm(list(i
                     location="left", label="Frequency $[\\log_{10}]$", aspect=20)
         plt.tight_layout()
 
-        plt.savefig(os.path.join(FIGPATH, TITLE + ".jpg"), dpi=300)
+        plt.savefig(os.path.join(FIGPATH, FILENAME + "_histogram.jpg"), dpi=300)
 
     # close all figures to avoid memory leak
     plt.close("all")
