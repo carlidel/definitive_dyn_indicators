@@ -6,7 +6,7 @@ import pathlib
 import json
 from tqdm import tqdm
 import h5py
-from typing import List
+from typing import List, Any
 
 from dataclasses import dataclass
 
@@ -182,13 +182,29 @@ class RunConfig:
     t_norm: int
     displacement_module: float
 
+    t_checkpoints: int = 10000
+
     def get_event_list(self):
         self.times = np.sort(self.times)
         return [
             ["sample", t] for t in self.times
         ] + [
             ["normalize", t] for t in np.arange(self.t_norm, np.max(self.times), self.t_norm)
+        ] + [
+            ["checkpoint", t] for t in np.arange(self.t_checkpoints, np.max(self.times), self.t_checkpoints)
         ]
+
+
+@dataclass
+class Checkpoint:
+    particles_config: ParticlesConfig
+    lhc_config: LHCConfig
+    run_config: RunConfig
+    
+    particle_list: List[ParticlesData]
+
+    current_time: int = 0
+    context: Any = xo.ContextCpu()
 
 
 def get_particle_data(particles: xp.Particles, context=xo.ContextCpu()):
