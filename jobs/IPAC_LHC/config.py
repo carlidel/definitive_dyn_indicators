@@ -41,7 +41,7 @@ class EOSConfig:
 
 
 default_eos = EOSConfig(
-    eos_path="/eos/user/c/camontan/LHC_IPAC/",
+    eos_path="/eos/project/d/da-and-diffusion-studies/DA_Studies/Simulations/Models/dynamic_indicator_analysis/IPAC_LHC",
     hdf5_filename="LHC_basic.hdf5",
     checkpoint_filename="LHC_basic.pkl",
 )
