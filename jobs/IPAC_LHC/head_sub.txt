@@ -1,5 +1,5 @@
 universe                = docker
-docker_image            = carlidel/dynamic_indicators:v12
+docker_image            = carlidel/dynamic_indicators:v13
 
 executable              = ../execute_run.sh
 arguments               = $(hdf5_file) $(chk_file) $(lhc_config) $(particle_config) $(dyn_ind)
