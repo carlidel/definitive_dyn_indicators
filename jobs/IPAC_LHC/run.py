@@ -85,7 +85,7 @@ if __name__ == "__main__":
             particles_config=particle_config,
             lhc_config=cfg.lhc_configs[args.hl_lhc],
             run_config=cfg.run_config_ground_truth if args.dyn_ind == "ground_truth" else cfg.run_config_dyn_indicator,
-            eos_config=eos_config,
+
             particles_list=p_list
         )
 
