@@ -143,7 +143,7 @@ class ParticlesConfig:
     def total_samples(self) -> int:
         return self.samples ** 2
 
-    def get_initial_codintions(self):
+    def get_initial_conditions(self):
         xx, yy = np.meshgrid(
             np.linspace(self.x_min, self.x_max, self.samples),
             np.linspace(self.y_min, self.y_max, self.samples),
@@ -161,7 +161,7 @@ class ParticlesConfig:
             zeta=z_flat, delta=delta_flat, steps=np.zeros_like(x_flat))
 
     def get_initial_conditions_with_displacement(self, displacement_module: float, displacement_kind: str):
-        p_data = self.get_initial_codintions()
+        p_data = self.get_initial_conditions()
         
         if displacement_kind == "x":
             p_data.x += displacement_module
@@ -434,7 +434,7 @@ def track_reverse(chk: Checkpoint, hdf5_path: str, context=xo.ContextCpu()):
             p_copy = p.copy()
             backtracker.track(p_copy, num_turns=time)
             chk.current_t = time
-            data_0 = chk.particles_config.get_initial_codintions()
+            data_0 = chk.particles_config.get_initial_conditions()
             data_1 = get_particle_data(p_copy, context=context)
             distance = np.sqrt((data_0.x - data_1.x)**2 + (data_0.px - data_1.px)**2 + (data_0.y - data_1.y)**2 + (data_0.py - data_1.py)**2 + (data_0.zeta - data_1.zeta)**2 + (data_0.delta - data_1.delta)**2)
             
