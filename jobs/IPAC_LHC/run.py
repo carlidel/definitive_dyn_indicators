@@ -89,6 +89,9 @@ if __name__ == "__main__":
             particles_list=p_list
         )
 
+        if args.dyn_ind == "gali6" or args.dyn_ind == "rem":
+            chk.run_config.t_checkpoints = chk.run_config.t_checkpoints // 2
+
     if chk.completed:
         print("Checkpoint already completed!")
         print(eos_config)
