@@ -15,6 +15,16 @@ if __name__ == "__main__":
     if not os.path.exists(sub_folder):
         os.makedirs(sub_folder)
 
+    launch_all_file = open(os.path.join(sub_folder, "launch_all.sh"), "w")
+    launch_all_file.write("#!/bin/bash\n\n")
+    launch_all_file.write("rm -v *.dag.*")
+    launch_all_file.write("\n\n")
+
+    launch_all_file_GT = open(os.path.join(sub_folder, "launch_all_GT.sh"), "w")
+    launch_all_file_GT.write("#!/bin/bash\n\n")
+    launch_all_file_GT.write("rm -v *.dag.*")
+    launch_all_file_GT.write("\n\n")
+
     # open and load the txt file "head_sub.txt"
     with open("head_sub.txt", "r") as f:
         head_sub = f.read()
@@ -27,6 +37,11 @@ if __name__ == "__main__":
         checkpoint_file_name = job_name + ".pkl"
 
         dagman_file_name = job_name + ".dag"
+
+        if DYN != "ground_truth":
+            launch_all_file.write("condor_submit_dag " + dagman_file_name + "\n")
+        else:
+            launch_all_file_GT.write("condor_submit_dag " + dagman_file_name + "\n")
 
         with open(os.path.join(sub_folder, sub_file_name), "w") as f:
             f.write(head_sub)
@@ -47,3 +62,6 @@ if __name__ == "__main__":
                 f.write(f"JOB JOB{i} {sub_file_name}\n")
                 if i != 0:
                     f.write(f"PARENT JOB{i-1} CHILD JOB{i}\n")
+
+    launch_all_file.close()
+    launch_all_file_GT.close()
