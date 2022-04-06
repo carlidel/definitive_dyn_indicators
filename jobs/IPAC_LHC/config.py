@@ -97,17 +97,27 @@ run_config_quickest_no_chk = RunConfig(
 run_config_test = RunConfig(
     times=np.arange(100, 1100, 100),
     t_norm=100,
+    t_checkpoints=500,
+    displacement_module=1e-12
+)
+
+run_config_test_no_chk = RunConfig(
+    times=np.arange(100, 1100, 100),
+    t_norm=100,
+    t_checkpoints=1000000,
     displacement_module=1e-12
 )
 
 run_config_dyn_indicator = RunConfig(
     times=np.arange(100, 100100, 100),
     t_norm=100,
+    t_checkpoints=35000,
     displacement_module=1e-12
 )
 
 run_config_ground_truth = RunConfig(
     times=np.array([100, 1000, 10000, 100000, 1000000, 10000000]),
     t_norm=100,
+    t_checkpoints=80000,
     displacement_module=1e-12
 )
