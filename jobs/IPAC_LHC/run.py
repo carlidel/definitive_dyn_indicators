@@ -4,9 +4,9 @@ import argparse
 import pickle
 import xpart as xp
 import xobjects as xo
+import definitive_dyn_indicators.utils.xtrack_engine as xe
 
 import config as cfg
-import definitive_dyn_indicators.utils.xtrack_engine as xe
 
 
 if __name__ == "__main__":
