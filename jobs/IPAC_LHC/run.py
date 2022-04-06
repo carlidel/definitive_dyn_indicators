@@ -94,7 +94,7 @@ if __name__ == "__main__":
         print(eos_config)
         exit(0)
 
-    if args.dyn_ind == "ground_truth" or args.dy_ind == "fli":
+    if args.dyn_ind == "ground_truth" or args.dyn_ind == "fli":
         chk = xe.track_lyapunov(chk, eos_config.hdf5_path(), context)
 
     elif args.dyn_ind == "ofli":
