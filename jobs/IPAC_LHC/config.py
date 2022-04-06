@@ -11,7 +11,13 @@ class EOSConfig:
     local_path: str = "."
 
     def grab_files_from_eos(self):
-        if os.path.exists(os.path.join(self.eos_path, self.hdf5_filename)):
+        print(f"eos_filepath: {os.path.join(self.eos_path, self.hdf5_filename)}")
+        print(f"checkpoint_filepath: {os.path.join(self.eos_path, self.checkpoint_filename)}")
+
+        print(f"eos_exists: {os.path.exists(os.path.join(self.eos_path, self.hdf5_filename))}")
+        print(f"checkpoint_exists: {os.path.exists(os.path.join(self.eos_path, self.checkpoint_filename))}")
+        
+        if os.path.exists(os.path.join(self.eos_path, self.checkpoint_filename)):
             os.system(
                 f"xrdcp root://eosuser.cern.ch/{self.eos_path}/{self.checkpoint_filename} {self.local_path}")
             eos_exists = True
@@ -25,9 +31,13 @@ class EOSConfig:
         else:
             checkpoint_exists = False
         
+        print(f"eos_exists: {eos_exists}")
+        print(f"checkpoint_exists: {checkpoint_exists}")
         return eos_exists, checkpoint_exists
 
     def push_files_to_eos(self):
+        print(f"xrdcp {self.local_path}/{self.hdf5_filename} root://eosuser.cern.ch/{self.eos_path}/{self.hdf5_filename}")
+        print(f"xrdcp {self.local_path}/{self.checkpoint_filename} root://eosuser.cern.ch/{self.eos_path}/{self.checkpoint_filename}")
         os.system(
             f"xrdcp {self.local_path}/{self.hdf5_filename} root://eosuser.cern.ch/{self.eos_path}/{self.hdf5_filename}")
         os.system(
