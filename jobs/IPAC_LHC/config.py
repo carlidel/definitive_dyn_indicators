@@ -13,33 +13,38 @@ class EOSConfig:
     def grab_files_from_eos(self):
         print(f"eos_filepath: {os.path.join(self.eos_path, self.hdf5_filename)}")
         print(f"checkpoint_filepath: {os.path.join(self.eos_path, self.checkpoint_filename)}")
-
-        print(f"eos_exists: {os.path.exists(os.path.join(self.eos_path, self.hdf5_filename))}")
-        print(f"checkpoint_exists: {os.path.exists(os.path.join(self.eos_path, self.checkpoint_filename))}")
         
         try:
             os.system(
                 f"xrdcp root://eosuser.cern.ch/{self.eos_path}/{self.checkpoint_filename} {self.local_path}")
-            eos_exists = True
-            print("Found checkpoint file")
+            print("Done xrdcp (maybe?)")
         except Exception as e:
             print(e)
-            eos_exists = False
+        
+        if os.path.exists(os.path.join(self.local_path, self.checkpoint_filename)):
+            print("Found checkpoint file")
+            checkpoint_exists = True
+        else:
             print("No checkpoint file found")
+            checkpoint_exists = False
 
         try:
             os.system(
                 f"xrdcp root://eosuser.cern.ch/{self.eos_path}/{self.hdf5_filename} {self.local_path}")
-            checkpoint_exists = True
-            print("Found hdf5 file")
+            print("Done xrdcp (maybe?)")
         except Exception as e:
             print(e)
-            checkpoint_exists = False
+
+        if os.path.exists(os.path.join(self.local_path, self.hdf5_filename)):
+            print("Found hdf5 file")
+            hdf5_exists = True
+        else:
             print("No hdf5 file found")
-        
-        print(f"eos_exists: {eos_exists}")
+            hdf5_exists = False
+
+        print(f"hdf5_exists: {hdf5_exists}")
         print(f"checkpoint_exists: {checkpoint_exists}")
-        return eos_exists, checkpoint_exists
+        return hdf5_exists, checkpoint_exists
 
     def push_files_to_eos(self):
         print(f"xrdcp {self.local_path}/{self.hdf5_filename} root://eosuser.cern.ch/{self.eos_path}/{self.hdf5_filename}")
