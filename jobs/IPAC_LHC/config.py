@@ -17,19 +17,25 @@ class EOSConfig:
         print(f"eos_exists: {os.path.exists(os.path.join(self.eos_path, self.hdf5_filename))}")
         print(f"checkpoint_exists: {os.path.exists(os.path.join(self.eos_path, self.checkpoint_filename))}")
         
-        if os.path.exists(os.path.join(self.eos_path, self.checkpoint_filename)):
+        try:
             os.system(
                 f"xrdcp root://eosuser.cern.ch/{self.eos_path}/{self.checkpoint_filename} {self.local_path}")
             eos_exists = True
-        else:
+            print("Found checkpoint file")
+        except Exception as e:
+            print(e)
             eos_exists = False
+            print("No checkpoint file found")
 
-        if os.path.exists(os.path.join(self.eos_path, self.hdf5_filename)):
+        try:
             os.system(
                 f"xrdcp root://eosuser.cern.ch/{self.eos_path}/{self.hdf5_filename} {self.local_path}")
             checkpoint_exists = True
-        else:
+            print("Found hdf5 file")
+        except Exception as e:
+            print(e)
             checkpoint_exists = False
+            print("No hdf5 file found")
         
         print(f"eos_exists: {eos_exists}")
         print(f"checkpoint_exists: {checkpoint_exists}")
