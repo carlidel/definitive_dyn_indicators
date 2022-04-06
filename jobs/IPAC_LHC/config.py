@@ -29,9 +29,9 @@ class EOSConfig:
 
     def push_files_to_eos(self):
         os.system(
-            f"xrdcp {self.local_path}/{self.hdf5_filename} root://eosuser.cern.ch/{self.eos_path}/{self.hdf5_filename}")
+            f"xrdcp -f {self.local_path}/{self.hdf5_filename} root://eosuser.cern.ch/{self.eos_path}/{self.hdf5_filename}")
         os.system(
-            f"xrdcp {self.local_path}/{self.checkpoint_filename} root://eosuser.cern.ch/{self.eos_path}/{self.checkpoint_filename}")
+            f"xrdcp -f {self.local_path}/{self.checkpoint_filename} root://eosuser.cern.ch/{self.eos_path}/{self.checkpoint_filename}")
 
     def hdf5_path(self) -> str:
         return os.path.join(self.local_path, self.hdf5_filename)
