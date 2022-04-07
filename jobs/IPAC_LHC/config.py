@@ -139,6 +139,6 @@ run_config_dyn_indicator = xe.RunConfig(
 run_config_ground_truth = xe.RunConfig(
     times=np.array([100, 1000, 10000, 100000, 1000000, 10000000]),
     t_norm=100,
-    t_checkpoints=80000,
+    t_checkpoints=40000,
     displacement_module=1e-12
 )

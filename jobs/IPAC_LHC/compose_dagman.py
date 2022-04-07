@@ -55,7 +55,7 @@ if __name__ == "__main__":
 
             f.write("queue 1")
 
-        repetitions = 130 if DYN == "ground_truth" else 8
+        repetitions = 260 if DYN == "ground_truth" else 8
 
         with open(os.path.join(sub_folder, dagman_file_name), "w") as f:
             for i in range(repetitions):
