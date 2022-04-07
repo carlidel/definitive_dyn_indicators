@@ -89,13 +89,12 @@ if __name__ == "__main__":
             particles_list=p_list
         )
 
-        if args.dyn_ind == "gali6" or args.dyn_ind == "rem":
-            chk.run_config.t_checkpoints = chk.run_config.t_checkpoints // 2
-
     if chk.completed:
         print("Checkpoint already completed!")
         print(eos_config)
-        exit(0)
+        # Let's make it more rough with the exit
+        # so that the pipeline breaks on purpose
+        raise ValueError("Checkpoint already completed!")
 
     if args.dyn_ind == "ground_truth" or args.dyn_ind == "fli":
         chk = xe.track_lyapunov(chk, eos_config.hdf5_path(), context)

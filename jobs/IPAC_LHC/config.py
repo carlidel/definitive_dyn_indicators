@@ -132,7 +132,7 @@ run_config_test_no_chk = xe.RunConfig(
 run_config_dyn_indicator = xe.RunConfig(
     times=np.arange(100, 100100, 100),
     t_norm=100,
-    t_checkpoints=35000,
+    t_checkpoints=17500,
     displacement_module=1e-12
 )
 
