@@ -951,10 +951,10 @@ def track_tune(chk: Checkpoint, hdf5_path: str, context=xo.ContextCpu()):
             chk.current_t = time
             chk.particles_list[0] = p.to_dict()
 
-            x = context.nparray_from_context_array(tracker.record_last_track.x)
-            px = context.nparray_from_context_array(tracker.record_last_track.px)
-            y = context.nparray_from_context_array(tracker.record_last_track.y)
-            py = context.nparray_from_context_array(tracker.record_last_track.py)
+            x = tracker.record_last_track.x
+            px = tracker.record_last_track.px
+            y = tracker.record_last_track.y
+            py = tracker.record_last_track.py
 
             with h5py.File(
                 hdf5_path.replace(".hdf5", f"_{time}.hdf5"), "a"
