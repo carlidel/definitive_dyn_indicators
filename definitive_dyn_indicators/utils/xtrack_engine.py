@@ -551,12 +551,13 @@ def track_reverse(chk: Checkpoint, hdf5_path: str, context=xo.ContextCpu()):
     for kind, processing_time, abs_time, to_do in tqdm(
         chk.run_config.get_event_list_reverse()
     ):
-        if loop_start <= abs_time:
-            continue
-
         print(f"Event {kind}, at time {abs_time}. Current time {chk.current_t}.")
         print(f"Processing time: {processing_time}")
         print(f"To do after: {to_do}")
+
+        if loop_start >= abs_time:
+            print("Skipping event")
+            continue
 
         if kind == "forward":
             time_delta = abs_time - chk.current_t
@@ -600,6 +601,7 @@ def track_reverse(chk: Checkpoint, hdf5_path: str, context=xo.ContextCpu()):
             chk.current_t = abs_time
             chk.particles_list[0] = p.to_dict()
             chk.particles_list[1] = p_r.to_dict()
+            return chk
 
     chk.completed = True
     return chk
@@ -929,6 +931,10 @@ def track_gali_6(chk: Checkpoint, hdf5_path: str, context=xo.ContextCpu()):
 
 def track_tune(chk: Checkpoint, hdf5_path: str, context=xo.ContextCpu()):
     tracker = chk.lhc_config.get_tracker(context)
+    # I NEED TO FORCE THE FOLLOWING TO GET THE TRACKER TO WORK!
+    chk.particles_list[0]["at_element"] *= 0
+    chk.particles_list[0]["at_turn"] *= 0
+    chk.particles_list[0]["state"] = np.ones_like(chk.particles_list[0]["state"], dtype=int)
     p = xp.Particles.from_dict(chk.particles_list[0], _context=context)
 
     loop_start = chk.current_t
@@ -969,6 +975,7 @@ def track_tune(chk: Checkpoint, hdf5_path: str, context=xo.ContextCpu()):
                     hdf5_file.create_dataset(
                         f"py/{time}", data=py, compression="gzip", shuffle=True
                     )
-            return chk
+            if kind == "checkpoint":
+                return chk
     chk.completed = True
     return chk

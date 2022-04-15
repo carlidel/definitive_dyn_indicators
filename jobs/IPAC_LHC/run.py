@@ -72,6 +72,12 @@ if __name__ == "__main__":
                 .create_particles(context=context)
                 .to_dict()
             )
+        elif args.dyn_ind == "rem":
+            p_list.append(
+                particle_config.get_initial_conditions()
+                .create_particles(context=context)
+                .to_dict()
+            )
         elif args.dyn_ind == "ofli" or args.dyn_ind == "gali6":
             p_list.append(
                 particle_config.get_initial_conditions_with_displacement(
