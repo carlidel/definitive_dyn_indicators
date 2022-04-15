@@ -41,7 +41,8 @@ if __name__ == "__main__":
         dagman_file_name = job_name + ".dag"
 
         if DYN != "ground_truth":
-            launch_all_file.write("condor_submit_dag " + dagman_file_name + "\n")
+            if DYN == "rem" or DYN == "tune":
+                launch_all_file.write("condor_submit_dag " + dagman_file_name + "\n")
         else:
             launch_all_file_GT.write("condor_submit_dag " + dagman_file_name + "\n")
 
