@@ -1,13 +1,13 @@
-import numpy as np
-import os
 import argparse
+import os
 import pickle
-import xpart as xp
-import xobjects as xo
+
 import definitive_dyn_indicators.utils.xtrack_engine as xe
+import numpy as np
+import xobjects as xo
+import xpart as xp
 
 import config as cfg
-
 
 if __name__ == "__main__":
 
@@ -15,17 +15,26 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run IPAC LHC")
     parser.add_argument("--hdf5_filename", type=str, required=True)
     parser.add_argument("--checkpoint_filename", type=str, required=True)
-    parser.add_argument("--hl_lhc", type=int, default=0,
-                        help="configuration index, 0-5")
-    parser.add_argument("--particle_config", type=int,
-                        default=0, choices=[0, 1, 2])
+    parser.add_argument(
+        "--hl_lhc", type=int, default=0, help="configuration index, 0-5"
+    )
+    parser.add_argument("--particle_config", type=int, default=0, choices=[0, 1, 2])
 
-    parser.add_argument("--dyn_ind", type=str,
-                        choices=["ground_truth", "fli", "rem",
-                                 "ofli", "sali", "gali4", "gali6", "tune"]
-                        )
-    parser.add_argument("--context", type=str,
-                        choices=["cpu", "gpu"], default="gpu")
+    parser.add_argument(
+        "--dyn_ind",
+        type=str,
+        choices=[
+            "ground_truth",
+            "fli",
+            "rem",
+            "ofli",
+            "sali",
+            "gali4",
+            "gali6",
+            "tune",
+        ],
+    )
+    parser.add_argument("--context", type=str, choices=["cpu", "gpu"], default="gpu")
 
     # parse arguments
     args = parser.parse_args()
@@ -44,49 +53,122 @@ if __name__ == "__main__":
     eos_exists, checkpoint_exists = eos_config.grab_files_from_eos()
 
     if checkpoint_exists:
-        with open(os.path.join(eos_config.local_path, eos_config.checkpoint_filename), "rb") as f:
+        with open(
+            os.path.join(eos_config.local_path, eos_config.checkpoint_filename), "rb"
+        ) as f:
             chk = pickle.load(f)
     else:
         p_list = []
-        p_list.append(particle_config.get_initial_conditions(
-        ).create_particles(context=context).to_dict())
+        p_list.append(
+            particle_config.get_initial_conditions()
+            .create_particles(context=context)
+            .to_dict()
+        )
         if args.dyn_ind == "ground_truth" or args.dyn_ind == "fli":
-            p_list.append(particle_config.get_initial_conditions_with_displacement(
-                cfg.run_config_dyn_indicator.displacement_module, "random_4d").create_particles(context=context).to_dict())
+            p_list.append(
+                particle_config.get_initial_conditions_with_displacement(
+                    cfg.run_config_dyn_indicator.displacement_module, "random_4d"
+                )
+                .create_particles(context=context)
+                .to_dict()
+            )
         elif args.dyn_ind == "ofli" or args.dyn_ind == "gali6":
-            p_list.append(particle_config.get_initial_conditions_with_displacement(
-                cfg.run_config_dyn_indicator.displacement_module, "x").create_particles(context=context).to_dict())
-            p_list.append(particle_config.get_initial_conditions_with_displacement(
-                cfg.run_config_dyn_indicator.displacement_module, "px").create_particles(context=context).to_dict())
-            p_list.append(particle_config.get_initial_conditions_with_displacement(
-                cfg.run_config_dyn_indicator.displacement_module, "y").create_particles(context=context).to_dict())
-            p_list.append(particle_config.get_initial_conditions_with_displacement(
-                cfg.run_config_dyn_indicator.displacement_module, "py").create_particles(context=context).to_dict())
-            p_list.append(particle_config.get_initial_conditions_with_displacement(
-                cfg.run_config_dyn_indicator.displacement_module, "z").create_particles(context=context).to_dict())
-            p_list.append(particle_config.get_initial_conditions_with_displacement(
-                cfg.run_config_dyn_indicator.displacement_module, "delta").create_particles(context=context).to_dict())
+            p_list.append(
+                particle_config.get_initial_conditions_with_displacement(
+                    cfg.run_config_dyn_indicator.displacement_module, "x"
+                )
+                .create_particles(context=context)
+                .to_dict()
+            )
+            p_list.append(
+                particle_config.get_initial_conditions_with_displacement(
+                    cfg.run_config_dyn_indicator.displacement_module, "px"
+                )
+                .create_particles(context=context)
+                .to_dict()
+            )
+            p_list.append(
+                particle_config.get_initial_conditions_with_displacement(
+                    cfg.run_config_dyn_indicator.displacement_module, "y"
+                )
+                .create_particles(context=context)
+                .to_dict()
+            )
+            p_list.append(
+                particle_config.get_initial_conditions_with_displacement(
+                    cfg.run_config_dyn_indicator.displacement_module, "py"
+                )
+                .create_particles(context=context)
+                .to_dict()
+            )
+            p_list.append(
+                particle_config.get_initial_conditions_with_displacement(
+                    cfg.run_config_dyn_indicator.displacement_module, "z"
+                )
+                .create_particles(context=context)
+                .to_dict()
+            )
+            p_list.append(
+                particle_config.get_initial_conditions_with_displacement(
+                    cfg.run_config_dyn_indicator.displacement_module, "delta"
+                )
+                .create_particles(context=context)
+                .to_dict()
+            )
         elif args.dyn_ind == "gali4":
-            p_list.append(particle_config.get_initial_conditions_with_displacement(
-                cfg.run_config_dyn_indicator.displacement_module, "x").create_particles(context=context).to_dict())
-            p_list.append(particle_config.get_initial_conditions_with_displacement(
-                cfg.run_config_dyn_indicator.displacement_module, "px").create_particles(context=context).to_dict())
-            p_list.append(particle_config.get_initial_conditions_with_displacement(
-                cfg.run_config_dyn_indicator.displacement_module, "y").create_particles(context=context).to_dict())
-            p_list.append(particle_config.get_initial_conditions_with_displacement(
-                cfg.run_config_dyn_indicator.displacement_module, "py").create_particles(context=context).to_dict())
+            p_list.append(
+                particle_config.get_initial_conditions_with_displacement(
+                    cfg.run_config_dyn_indicator.displacement_module, "x"
+                )
+                .create_particles(context=context)
+                .to_dict()
+            )
+            p_list.append(
+                particle_config.get_initial_conditions_with_displacement(
+                    cfg.run_config_dyn_indicator.displacement_module, "px"
+                )
+                .create_particles(context=context)
+                .to_dict()
+            )
+            p_list.append(
+                particle_config.get_initial_conditions_with_displacement(
+                    cfg.run_config_dyn_indicator.displacement_module, "y"
+                )
+                .create_particles(context=context)
+                .to_dict()
+            )
+            p_list.append(
+                particle_config.get_initial_conditions_with_displacement(
+                    cfg.run_config_dyn_indicator.displacement_module, "py"
+                )
+                .create_particles(context=context)
+                .to_dict()
+            )
         elif args.dyn_ind == "sali":
-            p_list.append(particle_config.get_initial_conditions_with_displacement(
-                cfg.run_config_dyn_indicator.displacement_module, "x").create_particles(context=context).to_dict())
-            p_list.append(particle_config.get_initial_conditions_with_displacement(
-                cfg.run_config_dyn_indicator.displacement_module, "y").create_particles(context=context).to_dict())
+            p_list.append(
+                particle_config.get_initial_conditions_with_displacement(
+                    cfg.run_config_dyn_indicator.displacement_module, "x"
+                )
+                .create_particles(context=context)
+                .to_dict()
+            )
+            p_list.append(
+                particle_config.get_initial_conditions_with_displacement(
+                    cfg.run_config_dyn_indicator.displacement_module, "y"
+                )
+                .create_particles(context=context)
+                .to_dict()
+            )
 
         chk = xe.Checkpoint(
             particles_config=particle_config,
             lhc_config=cfg.lhc_configs[args.hl_lhc],
-            run_config=cfg.run_config_ground_truth if args.dyn_ind == "ground_truth" else cfg.run_config_dyn_indicator,
-
-            particles_list=p_list
+            run_config=cfg.run_config_ground_truth
+            if args.dyn_ind == "ground_truth"
+            else cfg.run_config_reverse_indicator
+            if args.dyn_ind == "rem"
+            else cfg.run_config_dyn_indicator,
+            particles_list=p_list,
         )
 
     if chk.completed:
@@ -115,12 +197,17 @@ if __name__ == "__main__":
         chk = xe.track_gali_6(chk, eos_config.hdf5_path(), context)
 
     elif args.dyn_ind == "tune":
-        raise NotImplementedError("Tune not implemented yet")
+        chk = xe.track_tune(chk, eos_config.hdf5_path(), context)
 
-    with open(os.path.join(eos_config.local_path, eos_config.checkpoint_filename), "wb") as f:
+    with open(
+        os.path.join(eos_config.local_path, eos_config.checkpoint_filename), "wb"
+    ) as f:
         pickle.dump(chk, f)
 
     print("pushing back to eos...")
     print(eos_config)
 
-    eos_config.push_files_to_eos()
+    eos_config.push_files_to_eos(
+        all_hdf5_files=True if args.dyn_ind == "tune" else False
+    )
+
