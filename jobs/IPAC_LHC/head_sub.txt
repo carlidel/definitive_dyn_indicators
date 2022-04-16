@@ -20,8 +20,6 @@ transfer_output_files   = ""
 
 requirements = regexp("V100", TARGET.CUDADeviceName)&&(Machine =!= LastRemoteHost)
 
-+JobFlavour = "longlunch"
-
 on_exit_remove          = (ExitBySignal == False) && (ExitCode == 0)
 max_retries             = 5
 

@@ -17,7 +17,7 @@ if __name__ == "__main__":
 
     launch_all_file = open(os.path.join(sub_folder, "launch_all.sh"), "w")
     launch_all_file.write("#!/bin/bash\n\n")
-    launch_all_file.write("rm -v *.dag.*")
+    launch_all_file.write("rm -v *tune*.dag.*")
     launch_all_file.write("\n\n")
 
     launch_all_file_GT = open(os.path.join(sub_folder, "launch_all_GT.sh"), "w")
@@ -41,13 +41,19 @@ if __name__ == "__main__":
         dagman_file_name = job_name + ".dag"
 
         if DYN != "ground_truth":
-            if DYN == "rem" or DYN == "tune":
+            if DYN == "tune":
                 launch_all_file.write("condor_submit_dag " + dagman_file_name + "\n")
         else:
             launch_all_file_GT.write("condor_submit_dag " + dagman_file_name + "\n")
 
         with open(os.path.join(sub_folder, sub_file_name), "w") as f:
             f.write(head_sub)
+            f.write("\n\n")
+            if DYN == "tune":
+                f.write("RequestCpus = 2\n")
+                f.write('+JobFlavour = "espresso"')
+            else:
+                f.write('+JobFlavour = "longlunch"')
             f.write("\n\n")
 
             f.write(f"hdf5_file={hdf5_file_name}\n")
@@ -58,7 +64,15 @@ if __name__ == "__main__":
 
             f.write("queue 1")
 
-        repetitions = 260 if DYN == "ground_truth" else 20 if DYN == "rem" else 8
+        repetitions = (
+            260
+            if DYN == "ground_truth"
+            else 20
+            if DYN == "rem"
+            else 101
+            if DYN == "tune"
+            else 8
+        )
 
         with open(os.path.join(sub_folder, dagman_file_name), "w") as f:
             for i in range(repetitions):

@@ -50,7 +50,9 @@ if __name__ == "__main__":
     eos_config.hdf5_filename = args.hdf5_filename
     eos_config.checkpoint_filename = args.checkpoint_filename
 
-    eos_exists, checkpoint_exists = eos_config.grab_files_from_eos()
+    hdf5_exists, checkpoint_exists = eos_config.grab_files_from_eos(
+        avoid_hdf5=True if args.dyn_ind == "tune" else False
+    )
 
     if checkpoint_exists:
         with open(
@@ -173,6 +175,8 @@ if __name__ == "__main__":
             if args.dyn_ind == "ground_truth"
             else cfg.run_config_reverse_indicator
             if args.dyn_ind == "rem"
+            else cfg.run_config_tune
+            if args.dyn_ind == "tune"
             else cfg.run_config_dyn_indicator,
             particles_list=p_list,
         )

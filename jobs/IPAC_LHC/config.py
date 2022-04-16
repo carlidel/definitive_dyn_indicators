@@ -12,7 +12,7 @@ class EOSConfig:
     checkpoint_filename: str
     local_path: str = "."
 
-    def grab_files_from_eos(self):
+    def grab_files_from_eos(self, avoid_hdf5: bool = False):
         print(f"eos_filepath: {os.path.join(self.eos_path, self.hdf5_filename)}")
         print(
             f"checkpoint_filepath: {os.path.join(self.eos_path, self.checkpoint_filename)}"
@@ -33,19 +33,22 @@ class EOSConfig:
             print("No checkpoint file found")
             checkpoint_exists = False
 
-        try:
-            os.system(
-                f"xrdcp root://eosuser.cern.ch/{self.eos_path}/{self.hdf5_filename} {self.local_path}"
-            )
-            print("Done xrdcp (maybe?)")
-        except Exception as e:
-            print(e)
+        if not avoid_hdf5:
+            try:
+                os.system(
+                    f"xrdcp root://eosuser.cern.ch/{self.eos_path}/{self.hdf5_filename} {self.local_path}"
+                )
+                print("Done xrdcp (maybe?)")
+            except Exception as e:
+                print(e)
 
-        if os.path.exists(os.path.join(self.local_path, self.hdf5_filename)):
-            print("Found hdf5 file")
-            hdf5_exists = True
+            if os.path.exists(os.path.join(self.local_path, self.hdf5_filename)):
+                print("Found hdf5 file")
+                hdf5_exists = True
+            else:
+                print("No hdf5 file found")
+                hdf5_exists = False
         else:
-            print("No hdf5 file found")
             hdf5_exists = False
 
         print(f"hdf5_exists: {hdf5_exists}")
@@ -149,6 +152,13 @@ run_config_dyn_indicator = xe.RunConfig(
     times=np.arange(100, 100100, 100),
     t_norm=100,
     t_checkpoints=17500,
+    displacement_module=1e-12,
+)
+
+run_config_tune = xe.RunConfig(
+    times=np.arange(100, 100100, 100),
+    t_norm=100,
+    t_checkpoints=1000,
     displacement_module=1e-12,
 )
 
