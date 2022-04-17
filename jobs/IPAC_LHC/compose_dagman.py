@@ -44,14 +44,14 @@ if __name__ == "__main__":
 
                 if DYN != "ground_truth":
                     launch_all_file.write(
-                        f"rm -v LHC_{LHC}_ZETA_{ZETA}_DYN_{DYN}.dag.*"
+                        f"rm -v LHC_{LHC}_ZETA_{ZETA}_DYN_{DYN}.dag.*" + "\n"
                     )
                     launch_all_file.write(
                         "condor_submit_dag " + dagman_file_name + "\n"
                     )
                 else:
                     launch_all_file_GT.write(
-                        f"rm -v LHC_{LHC}_ZETA_{ZETA}_DYN_{DYN}.dag.*"
+                        f"rm -v LHC_{LHC}_ZETA_{ZETA}_DYN_{DYN}.dag.*" + "\n"
                     )
                     launch_all_file_GT.write(
                         "condor_submit_dag " + dagman_file_name + "\n"
