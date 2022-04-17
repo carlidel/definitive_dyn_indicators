@@ -296,7 +296,7 @@ class Checkpoint:
         return f"Checkpoint(current_t={self.current_t}, particles_config={self.particles_config}, lhc_config={self.lhc_config}, run_config={self.run_config}), completed={self.completed}"
 
 
-def get_particle_data(particles: xp.Particles, context=xo.ContextCpu()):
+def get_particle_data(particles: xp.Particles, context=xo.ContextCpu(), retidx=False):
     x = context.nparray_from_context_array(particles.x)
     px = context.nparray_from_context_array(particles.px)
     y = context.nparray_from_context_array(particles.y)
@@ -324,7 +324,17 @@ def get_particle_data(particles: xp.Particles, context=xo.ContextCpu()):
     zeta[at_turn < n_turns] = np.nan
     delta[at_turn < n_turns] = np.nan
 
-    return ParticlesData(x=x, px=px, y=y, py=py, zeta=zeta, delta=delta, steps=at_turn)
+    if not retidx:
+        return ParticlesData(
+            x=x, px=px, y=y, py=py, zeta=zeta, delta=delta, steps=at_turn
+        )
+    else:
+        return (
+            ParticlesData(
+                x=x, px=px, y=y, py=py, zeta=zeta, delta=delta, steps=at_turn
+            ),
+            argsort,
+        )
 
 
 def realign_particles(
@@ -335,7 +345,10 @@ def realign_particles(
     context=xo.ContextCpu(),
 ):
     p_ref = get_particle_data(particles_ref, context=context)
-    p_target = get_particle_data(particles_target, context=context)
+    p_target, argsort = get_particle_data(
+        particles_target, context=context, retidx=True
+    )
+    idxs = argsort.argosrt()
 
     if realign_4d_only:
         distance = np.sqrt(
@@ -357,23 +370,23 @@ def realign_particles(
     ratio = module / distance
 
     particles_target.x = context.nparray_to_context_array(
-        p_ref.x + (p_target.x - p_ref.x) * ratio
+        (p_ref.x + (p_target.x - p_ref.x) * ratio)[idxs]
     )
     particles_target.px = context.nparray_to_context_array(
-        p_ref.px + (p_target.px - p_ref.px) * ratio
+        (p_ref.px + (p_target.px - p_ref.px) * ratio)[idxs]
     )
     particles_target.y = context.nparray_to_context_array(
-        p_ref.y + (p_target.y - p_ref.y) * ratio
+        (p_ref.y + (p_target.y - p_ref.y) * ratio)[idxs]
     )
     particles_target.py = context.nparray_to_context_array(
-        p_ref.py + (p_target.py - p_ref.py) * ratio
+        (p_ref.py + (p_target.py - p_ref.py) * ratio)[idxs]
     )
     if not realign_4d_only:
         particles_target.zeta = context.nparray_to_context_array(
-            p_ref.zeta + (p_target.zeta - p_ref.zeta) * ratio
+            (p_ref.zeta + (p_target.zeta - p_ref.zeta) * ratio)[idxs]
         )
         particles_target.delta = context.nparray_to_context_array(
-            p_ref.delta + (p_target.delta - p_ref.delta) * ratio
+            (p_ref.delta + (p_target.delta - p_ref.delta) * ratio)[idxs]
         )
 
 
@@ -510,13 +523,13 @@ def track_ortho_lyapunov(chk: Checkpoint, hdf5_path: str, context=xo.ContextCpu(
                     get_displacement_module(p, p_list[0], context=context)
                     / chk.run_config.displacement_module
                 )
-            realign_particles(
-                p_list[0],
-                p,
-                chk.run_config.displacement_module,
-                realign_4d_only=False,
-                context=context,
-            )
+                realign_particles(
+                    p_list[0],
+                    p,
+                    chk.run_config.displacement_module,
+                    realign_4d_only=False,
+                    context=context,
+                )
 
         elif kind == "checkpoint":
             chk.particles_list = [p.to_dict() for p in p_list]
@@ -934,7 +947,9 @@ def track_tune(chk: Checkpoint, hdf5_path: str, context=xo.ContextCpu()):
     # I NEED TO FORCE THE FOLLOWING TO GET THE TRACKER TO WORK!
     chk.particles_list[0]["at_element"] *= 0
     chk.particles_list[0]["at_turn"] *= 0
-    chk.particles_list[0]["state"] = np.ones_like(chk.particles_list[0]["state"], dtype=int)
+    chk.particles_list[0]["state"] = np.ones_like(
+        chk.particles_list[0]["state"], dtype=int
+    )
     p = xp.Particles.from_dict(chk.particles_list[0], _context=context)
 
     loop_start = chk.current_t

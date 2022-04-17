@@ -170,7 +170,32 @@ run_config_reverse_indicator = xe.RunConfig(
 )
 
 run_config_ground_truth = xe.RunConfig(
-    times=np.array([100, 1000, 10000, 100000, 1000000, 10000000]),
+    times=np.array(
+        [
+            100,
+            1000,
+            10000,
+            100000,
+            200000,
+            300000,
+            400000,
+            500000,
+            600000,
+            700000,
+            800000,
+            900000,
+            1000000,
+            2000000,
+            3000000,
+            4000000,
+            5000000,
+            6000000,
+            7000000,
+            8000000,
+            9000000,
+            10000000,
+        ]
+    ),
     t_norm=100,
     t_checkpoints=40000,
     displacement_module=1e-12,
