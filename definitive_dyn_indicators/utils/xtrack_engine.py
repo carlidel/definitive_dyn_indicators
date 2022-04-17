@@ -971,6 +971,8 @@ def track_tune(chk: Checkpoint, hdf5_path: str, context=xo.ContextCpu()):
             y = tracker.record_last_track.y
             py = tracker.record_last_track.py
 
+            _, idx = get_particle_data(p, context=context, retidx=True)
+
             with h5py.File(
                 hdf5_path.replace(".hdf5", f"_{time}.hdf5"), "a"
             ) as hdf5_file:
@@ -989,6 +991,10 @@ def track_tune(chk: Checkpoint, hdf5_path: str, context=xo.ContextCpu()):
                 if f"py/{time}" not in hdf5_file:
                     hdf5_file.create_dataset(
                         f"py/{time}", data=py, compression="gzip", shuffle=True
+                    )
+                if f"idx/{time}" not in hdf5_file:
+                    hdf5_file.create_dataset(
+                        f"idx/{time}", data=idx, compression="gzip", shuffle=True
                     )
             if kind == "checkpoint":
                 return chk
