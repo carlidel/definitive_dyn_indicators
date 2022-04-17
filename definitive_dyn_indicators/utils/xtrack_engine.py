@@ -348,7 +348,7 @@ def realign_particles(
     p_target, argsort = get_particle_data(
         particles_target, context=context, retidx=True
     )
-    idxs = argsort.argosrt()
+    idxs = argsort.argsort()
 
     if realign_4d_only:
         distance = np.sqrt(
