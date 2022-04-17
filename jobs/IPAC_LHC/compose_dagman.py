@@ -25,14 +25,12 @@ if __name__ == "__main__":
                 os.path.join(sub_folder, f"launch_LHC_{LHC}_ZETA_{ZETA}.sh"), "w"
             )
             launch_all_file.write("#!/bin/bash\n\n")
-            launch_all_file.write(f"rm -v LHC_{LHC}_ZETA_{ZETA}_DYN_*.dag.*")
             launch_all_file.write("\n\n")
 
             launch_all_file_GT = open(
                 os.path.join(sub_folder, f"launch_GT_LHC_{LHC}_ZETA_{ZETA}.sh"), "w"
             )
             launch_all_file_GT.write("#!/bin/bash\n\n")
-            launch_all_file_GT.write(f"rm -v LHC_{LHC}_ZETA_{ZETA}_DYN_*.dag.*")
             launch_all_file_GT.write("\n\n")
 
             for DYN in DYN_IND_LIST:
@@ -46,9 +44,15 @@ if __name__ == "__main__":
 
                 if DYN != "ground_truth":
                     launch_all_file.write(
+                        f"rm -v LHC_{LHC}_ZETA_{ZETA}_DYN_{DYN}.dag.*"
+                    )
+                    launch_all_file.write(
                         "condor_submit_dag " + dagman_file_name + "\n"
                     )
                 else:
+                    launch_all_file_GT.write(
+                        f"rm -v LHC_{LHC}_ZETA_{ZETA}_DYN_{DYN}.dag.*"
+                    )
                     launch_all_file_GT.write(
                         "condor_submit_dag " + dagman_file_name + "\n"
                     )
