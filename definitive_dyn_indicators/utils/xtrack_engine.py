@@ -369,25 +369,24 @@ def realign_particles(
 
     ratio = module / distance
 
-    particles_target.x = context.nparray_to_context_array(
-        (p_ref.x + (p_target.x - p_ref.x) * ratio)[idxs]
-    )
-    particles_target.px = context.nparray_to_context_array(
-        (p_ref.px + (p_target.px - p_ref.px) * ratio)[idxs]
-    )
-    particles_target.y = context.nparray_to_context_array(
-        (p_ref.y + (p_target.y - p_ref.y) * ratio)[idxs]
-    )
-    particles_target.py = context.nparray_to_context_array(
-        (p_ref.py + (p_target.py - p_ref.py) * ratio)[idxs]
-    )
+    dict_target = particles_target.to_dict()
+
+    dict_target["x"] = (p_ref.x + (p_target.x - p_ref.x) * ratio)[idxs]
+    dict_target["px"] = (p_ref.px + (p_target.px - p_ref.px) * ratio)[idxs]
+    dict_target["y"] = (p_ref.y + (p_target.y - p_ref.y) * ratio)[idxs]
+    dict_target["py"] = (p_ref.py + (p_target.py - p_ref.py) * ratio)[idxs]
     if not realign_4d_only:
-        particles_target.zeta = context.nparray_to_context_array(
-            (p_ref.zeta + (p_target.zeta - p_ref.zeta) * ratio)[idxs]
-        )
-        particles_target.delta = context.nparray_to_context_array(
-            (p_ref.delta + (p_target.delta - p_ref.delta) * ratio)[idxs]
-        )
+        dict_target["zeta"] = (p_ref.zeta + (p_target.zeta - p_ref.zeta) * ratio)[idxs]
+        dict_target["delta"] = (p_ref.delta + (p_target.delta - p_ref.delta) * ratio)[
+            idxs
+        ]
+    # if present, delete "ptau" and "psigma" from dict_target
+    if "ptau" in dict_target:
+        del dict_target["ptau"]
+    if "psigma" in dict_target:
+        del dict_target["psigma"]
+
+    particles_target = xp.Particles.from_dict(dict_target, _context=context)
 
 
 def get_displacement_module(

@@ -136,15 +136,29 @@ run_config_quickest_no_chk = xe.RunConfig(
 
 run_config_test = xe.RunConfig(
     times=np.arange(100, 1100, 100),
-    t_norm=100,
+    t_norm=10,
     t_checkpoints=500,
     displacement_module=1e-12,
 )
 
 run_config_test_no_chk = xe.RunConfig(
     times=np.arange(100, 1100, 100),
-    t_norm=100,
+    t_norm=10,
     t_checkpoints=1000000,
+    displacement_module=1e-12,
+)
+
+run_config_test_no_norm = xe.RunConfig(
+    times=np.arange(100, 1100, 100),
+    t_norm=1000000,
+    t_checkpoints=500,
+    displacement_module=1e-12,
+)
+
+run_config_test_no_chk_no_norm = xe.RunConfig(
+    times=np.arange(100, 1100, 100),
+    t_norm=1000000,
+    t_checkpoints=5000000,
     displacement_module=1e-12,
 )
 
