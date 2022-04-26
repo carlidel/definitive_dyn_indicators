@@ -941,6 +941,100 @@ def track_gali_6(chk: Checkpoint, hdf5_path: str, context=xo.ContextCpu()):
     return chk
 
 
+def track_galiraw(chk: Checkpoint, hdf5_path: str, context=xo.ContextCpu()):
+    assert len(chk.particles_list) == 7
+    tracker = chk.lhc_config.get_tracker(context)
+    p_list = [
+        xp.Particles.from_dict(p_data, _context=context)
+        for p_data in chk.particles_list
+    ]
+    d_x = get_displacement_direction(p_list[0], p_list[1], context=context)
+    d_px = get_displacement_direction(p_list[0], p_list[2], context=context)
+    d_y = get_displacement_direction(p_list[0], p_list[3], context=context)
+    d_py = get_displacement_direction(p_list[0], p_list[4], context=context)
+    d_z = get_displacement_direction(p_list[0], p_list[5], context=context)
+    d_d = get_displacement_direction(p_list[0], p_list[6], context=context)
+
+    loop_start = chk.current_t
+    for kind, time in tqdm(chk.run_config.get_event_list()):
+        if loop_start == time:
+            continue
+        if chk.current_t != time:
+            if time < chk.current_t:
+                continue
+            delta_t = time - chk.current_t
+            for p in p_list:
+                tracker.track(p, num_turns=delta_t)
+            chk.current_t = time
+
+        if kind == "normalize":
+            for p in p_list[1:]:
+                realign_particles(
+                    p_list[0],
+                    p,
+                    chk.run_config.displacement_module,
+                    realign_4d_only=False,
+                    context=context,
+                )
+
+        elif kind == "checkpoint":
+            chk.particles_list = [p.to_dict() for p in p_list]
+            return chk
+
+        elif kind == "sample":
+            d_x = get_displacement_direction(p_list[0], p_list[1], context=context)
+            d_px = get_displacement_direction(p_list[0], p_list[2], context=context)
+            d_y = get_displacement_direction(p_list[0], p_list[3], context=context)
+            d_py = get_displacement_direction(p_list[0], p_list[4], context=context)
+            d_z = get_displacement_direction(p_list[0], p_list[5], context=context)
+            d_d = get_displacement_direction(p_list[0], p_list[6], context=context)
+            with h5py.File(hdf5_path, "a") as hdf5_file:
+                if f"direction/x/{time}" not in hdf5_file:
+                    hdf5_file.create_dataset(
+                        f"direction/x/{time}",
+                        data=d_x,
+                        compression="gzip",
+                        shuffle=True,
+                    )
+                if f"direction/px/{time}" not in hdf5_file:
+                    hdf5_file.create_dataset(
+                        f"direction/px/{time}",
+                        data=d_px,
+                        compression="gzip",
+                        shuffle=True,
+                    )
+                if f"direction/y/{time}" not in hdf5_file:
+                    hdf5_file.create_dataset(
+                        f"direction/y/{time}",
+                        data=d_y,
+                        compression="gzip",
+                        shuffle=True,
+                    )
+                if f"direction/py/{time}" not in hdf5_file:
+                    hdf5_file.create_dataset(
+                        f"direction/py/{time}",
+                        data=d_py,
+                        compression="gzip",
+                        shuffle=True,
+                    )
+                if f"direction/z/{time}" not in hdf5_file:
+                    hdf5_file.create_dataset(
+                        f"direction/z/{time}",
+                        data=d_z,
+                        compression="gzip",
+                        shuffle=True,
+                    )
+                if f"direction/d/{time}" not in hdf5_file:
+                    hdf5_file.create_dataset(
+                        f"direction/d/{time}",
+                        data=d_d,
+                        compression="gzip",
+                        shuffle=True,
+                    )
+    chk.completed = True
+    return chk
+
+
 def track_tune(chk: Checkpoint, hdf5_path: str, context=xo.ContextCpu()):
     tracker = chk.lhc_config.get_tracker(context)
     # I NEED TO FORCE THE FOLLOWING TO GET THE TRACKER TO WORK!

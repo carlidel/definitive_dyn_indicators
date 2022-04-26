@@ -6,7 +6,17 @@ import numpy as np
 
 LHC_CONFIG_LIST = np.arange(0, 6)
 ZETA_CONFIG_LIST = np.arange(0, 3)
-DYN_IND_LIST = ["ground_truth", "fli", "rem", "ofli", "sali", "gali4", "gali6", "tune"]
+DYN_IND_LIST = [
+    "ground_truth",
+    "fli",
+    "rem",
+    "ofli",
+    "sali",
+    "gali4",
+    "gali6",
+    "galiraw",
+    "tune",
+]
 
 if __name__ == "__main__":
 

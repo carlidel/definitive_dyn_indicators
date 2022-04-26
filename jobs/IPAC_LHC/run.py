@@ -31,6 +31,7 @@ if __name__ == "__main__":
             "sali",
             "gali4",
             "gali6",
+            "galiraw",
             "tune",
         ],
     )
@@ -80,7 +81,11 @@ if __name__ == "__main__":
                 .create_particles(context=context)
                 .to_dict()
             )
-        elif args.dyn_ind == "ofli" or args.dyn_ind == "gali6":
+        elif (
+            args.dyn_ind == "ofli"
+            or args.dyn_ind == "gali6"
+            or args.dyn_ind == "galiraw"
+        ):
             p_list.append(
                 particle_config.get_initial_conditions_with_displacement(
                     cfg.run_config_dyn_indicator.displacement_module, "x"
@@ -205,6 +210,9 @@ if __name__ == "__main__":
 
     elif args.dyn_ind == "gali6":
         chk = xe.track_gali_6(chk, eos_config.hdf5_path(), context)
+
+    elif args.dyn_ind == "galiraw":
+        chk = xe.track_galiraw(chk, eos_config.hdf5_path(), context)
 
     elif args.dyn_ind == "tune":
         chk = xe.track_tune(chk, eos_config.hdf5_path(), context)

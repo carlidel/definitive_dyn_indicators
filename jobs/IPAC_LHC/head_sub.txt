@@ -1,5 +1,5 @@
 universe                = docker
-docker_image            = carlidel/dynamic_indicators:v20
+docker_image            = carlidel/dynamic_indicators:v21
 
 executable              = ../execute_run.sh
 arguments               = $(hdf5_file) $(chk_file) $(lhc_config) $(particle_config) $(dyn_ind)
@@ -21,7 +21,7 @@ transfer_output_files   = ""
 requirements = regexp("V100", TARGET.CUDADeviceName)&&(Machine =!= LastRemoteHost)
 
 on_exit_remove          = (ExitBySignal == False) && (ExitCode == 0)
-max_retries             = 5
+max_retries             = 2
 
 notification            = Error
 notify_user             = camontan
